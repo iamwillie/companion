@@ -273,6 +273,8 @@ button{color:inherit;border:0}
     transform-origin: center;
   }
 
+  .pet-character.sleepy svg .pet-eye { transform-origin: center; }
+
   .pet-character.hungry {
     color: var(--warning);
   }
@@ -465,6 +467,18 @@ button{color:inherit;border:0}
   .pet-egg {
     color: var(--pet-color, var(--accent));
   }
+
+  .pet-character {
+    --pet-main: currentColor;
+    --pet-secondary: rgba(255,255,255,.18);
+    --pet-glow: rgba(var(--accent-rgb), .18);
+  }
+
+  .pet-character.species-lumafox { --pet-main:#ff9a5c; --pet-secondary:#73e6ff; --pet-glow:rgba(115,230,255,.22); }
+  .pet-character.species-mossling { --pet-main:#83e6ae; --pet-secondary:#d9ff9a; --pet-glow:rgba(131,230,174,.20); }
+  .pet-character.species-bytecat { --pet-main:#a9a0ff; --pet-secondary:#65d7ff; --pet-glow:rgba(169,160,255,.22); }
+  .pet-character.species-sparkbot { --pet-main:#ffd276; --pet-secondary:#ff9f4a; --pet-glow:rgba(255,210,118,.22); }
+  .pet-character.species-moonbun { --pet-main:#f4a7df; --pet-secondary:#b9b5ff; --pet-glow:rgba(244,167,223,.22); }
 
   .pet-stat-fill {
     background: linear-gradient(90deg, var(--pet-color, var(--accent)), var(--accent-2));
@@ -659,7 +673,7 @@ button{color:inherit;border:0}
 .pet-modal-input{width:100%;margin-top:8px;padding:10px 12px;color:var(--text);background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:9px;outline:none}
 .pet-modal-input:focus{border-color:var(--border-strong);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.07)}
 .pet-modal-note{margin-top:10px;color:var(--muted-2);font:9px/1.5 var(--mono)}
-.pet-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.danger-btn{color:var(--danger);border-color:rgba(255,126,150,.25);background:rgba(255,126,150,.05)}.pet-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
 .toast-stack{position:fixed;right:18px;bottom:18px;z-index:200;display:grid;gap:8px;width:min(360px,calc(100vw - 36px))}
 .toast{background:rgba(8,14,22,.96);border:1px solid var(--border-strong);border-left:3px solid var(--accent);border-radius:9px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.35);font:11px/1.45 var(--mono);animation:toastIn .22s ease both}
 @keyframes toastIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
@@ -711,18 +725,7 @@ button{color:inherit;border:0}
       </button>
 
       <button id="petCharacter" class="pet-character happy" type="button" title="Pet companion" aria-label="Pet companion">
-        <svg viewBox="0 0 96 96" fill="none" aria-hidden="true">
-          <path class="pet-ear" d="M28 29L19 12l20 10M68 29l9-17-20 10" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-          <path class="pet-tail" d="M72 68c15 0 16-14 8-17-5-2-8 2-6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
-          <rect class="pet-body-shape" x="20" y="22" width="56" height="58" rx="25" fill="rgba(89,217,255,.08)" stroke="currentColor" stroke-width="2.5"/>
-          <path d="M31 30c8-5 26-5 34 0" stroke="rgba(255,255,255,.16)" stroke-width="2" stroke-linecap="round"/>
-          <ellipse class="pet-eye pet-eye-left" cx="38" cy="47" rx="3.4" ry="4.2" fill="currentColor"/>
-          <ellipse class="pet-eye pet-eye-right" cx="58" cy="47" rx="3.4" ry="4.2" fill="currentColor"/>
-          <circle cx="31" cy="56" r="3.2" fill="rgba(255,126,150,.22)"/>
-          <circle cx="65" cy="56" r="3.2" fill="rgba(255,126,150,.22)"/>
-          <path id="petMouth" d="M39 59q9 8 18 0" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
-          <path class="pet-chest" d="M39 70h18" stroke="rgba(255,255,255,.12)" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+        <svg id="petCharacterSvg" viewBox="0 0 120 120" fill="none" aria-hidden="true"></svg>
       </button>
     </div>
 
@@ -783,6 +786,7 @@ button{color:inherit;border:0}
     </label>
     <div class="pet-modal-note">Your companion and its status are stored only in this browser using localStorage.</div>
     <div class="pet-modal-actions">
+      <button id="petModalReset" class="danger-btn" type="button">Reset companion</button>
       <button id="petModalCancel" class="text-btn" type="button">Cancel</button>
       <button id="petModalSave" class="primary-btn" type="button">Save name</button>
     </div>
@@ -802,6 +806,7 @@ button{color:inherit;border:0}
       name: "NOVA",
       stage: "egg",
       species: null,
+      eggSpecies: null,
       createdAt: Date.now(),
       hatchAt: Date.now() + PET_HATCH_MS,
       fullness: 100,
@@ -820,15 +825,16 @@ button{color:inherit;border:0}
   };
 
   const PET_SPECIES = {
-    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", lifespanDays:24, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
-    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", lifespanDays:30, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
-    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", lifespanDays:21, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
-    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", lifespanDays:18, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
-    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", lifespanDays:27, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
+    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", lifespanDays:24, hatchMinutes:4, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
+    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", lifespanDays:30, hatchMinutes:7, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
+    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", lifespanDays:21, hatchMinutes:5, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
+    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", lifespanDays:18, hatchMinutes:3, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
+    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", lifespanDays:27, hatchMinutes:6, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
   };
 
   const $ = (selector, root=document) => root.querySelector(selector);
   let state = loadState();
+  if (state.pet.stage === "egg" && !state.pet.eggSpecies) { beginIncubation(Date.now()); }
   let petMessageUntil = 0;
   let deferredInstallPrompt = null;
   let walkTimer = null;
@@ -853,7 +859,26 @@ button{color:inherit;border:0}
       ? { ...cloneDefaults(), ...stored, pet: { ...defaults.pet, ...(stored.pet || {}) }, prefs: { ...defaults.prefs, ...(stored.prefs || {}) } }
       : cloneDefaults();
     if (!merged.pet?.stage) {
-      merged.pet = { ...defaults.pet, createdAt: Date.now(), hatchAt: Date.now() + PET_HATCH_MS, lastUpdated: Date.now() };
+      merged.pet = { ...defaults.pet };
+      const now = Date.now();
+      const keys = Object.keys(PET_SPECIES);
+      const choice = PET_SPECIES.lumafox;
+      merged.pet.stage = "egg";
+      merged.pet.eggSpecies = keys[0];
+      merged.pet.createdAt = now;
+      merged.pet.hatchAt = now + Number(choice.hatchMinutes || 10) * 60000;
+      merged.pet.lastUpdated = now;
+    }
+    if (merged.pet.stage === "egg") {
+      const eggProfile = PET_SPECIES[merged.pet.eggSpecies];
+      if (!eggProfile) {
+        const keys = Object.keys(PET_SPECIES);
+        merged.pet.eggSpecies = keys[0];
+      }
+      if (!Number(merged.pet.hatchAt)) {
+        const profile = PET_SPECIES[merged.pet.eggSpecies] || PET_SPECIES.lumafox;
+        merged.pet.hatchAt = Number(merged.pet.createdAt || Date.now()) + Number(profile.hatchMinutes || 10) * 60000;
+      }
     }
     if (merged.pet.stage === "hatched") {
       const profile = PET_SPECIES[merged.pet.species] || PET_SPECIES.lumafox;
@@ -887,6 +912,35 @@ button{color:inherit;border:0}
   }
 
   function getPetSpeciesProfile() { return PET_SPECIES[state.pet?.species] || PET_SPECIES.lumafox; }
+  function getPetHatchProfile() {
+    const keys = Object.keys(PET_SPECIES);
+    const previousSpecies = state.pet.previousSpecies || null;
+    const availableKeys = keys.length > 1 ? keys.filter(key => key !== previousSpecies) : keys;
+    const species = availableKeys[Math.floor(Math.random() * availableKeys.length)];
+    return PET_SPECIES[species] ? { key: species, ...PET_SPECIES[species] } : { key: "lumafox", ...PET_SPECIES.lumafox };
+  }
+
+  function beginIncubation(now=Date.now()) {
+    const choice = getPetHatchProfile();
+    state.pet.stage = "egg";
+    state.pet.species = null;
+    state.pet.eggSpecies = choice.key;
+    state.pet.createdAt = now;
+    state.pet.hatchAt = now + (Number(choice.hatchMinutes || 10) * 60000);
+    state.pet.fullness = 100;
+    state.pet.happiness = 100;
+    state.pet.energy = 100;
+    state.pet.lastUpdated = now;
+    state.pet.lifespanDays = null;
+    state.pet.ageMs = 0;
+    state.pet.lifeStage = "egg";
+    state.pet.evolution = 0;
+    state.pet.evolvedAt = null;
+    state.pet.interactions = 0;
+    saveState();
+    return choice;
+  }
+
 
   const LIFE_STAGES = [
     { key:"baby", label:"BABY", start:0.00, end:0.20 },
@@ -928,7 +982,8 @@ button{color:inherit;border:0}
 
   function maybeHatchPet(now=Date.now()) {
     if (state.pet.stage !== "egg") return false;
-    const hatchAt = Number(state.pet.hatchAt) || (now + PET_HATCH_MS);
+    const profile = PET_SPECIES[state.pet.eggSpecies] || PET_SPECIES.lumafox;
+    const hatchAt = Number(state.pet.hatchAt) || (now + Number(profile.hatchMinutes || 10) * 60000);
     state.pet.hatchAt = hatchAt;
     if (now >= hatchAt) return hatchPet(now);
     return false;
@@ -936,14 +991,12 @@ button{color:inherit;border:0}
 
   function hatchPet(now=Date.now()) {
     if (state.pet.stage !== "egg") return false;
-    const keys = Object.keys(PET_SPECIES);
-    const previousSpecies = state.pet.previousSpecies || null;
-    const availableKeys = keys.length > 1 ? keys.filter(key => key !== previousSpecies) : keys;
-    const species = availableKeys[Math.floor(Math.random() * availableKeys.length)];
-    const profile = PET_SPECIES[species];
+    const species = state.pet.eggSpecies || "lumafox";
+    const profile = PET_SPECIES[species] || PET_SPECIES.lumafox;
     state.pet.stage = "hatched";
     state.pet.previousSpecies = species;
     state.pet.species = species;
+    state.pet.eggSpecies = null;
     state.pet.fullness = 88;
     state.pet.happiness = 92;
     state.pet.energy = 90;
@@ -1045,6 +1098,68 @@ button{color:inherit;border:0}
     walkTimer = null;
   }
 
+  function petAppearanceSvg(species, lifeStage, evolved, moodKey) {
+    const blink = moodKey === "sleepy" ? 'transform="scaleY(.18)" transform-origin="center"' : '';
+    const stage = lifeStage || "baby";
+    const evolvedMark = evolved ? `<circle cx="60" cy="13" r="7" fill="none" stroke="var(--pet-secondary)" stroke-width="2" opacity=".65"/><circle cx="60" cy="13" r="2" fill="var(--pet-secondary)"/>` : '';
+
+    if (species === "lumafox") {
+      const baby = stage === "baby", juvenile = stage === "juvenile", elder = stage === "elder";
+      const body = baby ? `<ellipse cx="60" cy="69" rx="28" ry="24" fill="rgba(255,154,92,.12)" stroke="currentColor" stroke-width="2.5"/>` : juvenile ? `<path d="M33 38q27-20 54 0v31q0 25-27 30Q33 94 33 69V38Z" fill="rgba(255,154,92,.12)" stroke="currentColor" stroke-width="2.6"/>` : `<path d="M27 40q33-28 66 0v36q0 28-33 31Q27 104 27 76V40Z" fill="rgba(255,154,92,.12)" stroke="currentColor" stroke-width="2.8"/>`;
+      const ears = baby ? `<path d="M41 44L30 27l18 8M79 44l11-17-18 8" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>` : `<path d="M39 43L26 17l25 14M81 43l13-26-25 14" stroke="currentColor" stroke-width="3.2" stroke-linejoin="round"/>`;
+      const tail = elder ? `<path d="M83 78c29 3 29-27 12-28-10 0-14 9-8 15 5 4 10 0 10-4" stroke="var(--pet-secondary)" stroke-width="6" stroke-linecap="round"/>` : `<path d="M82 72c27 4 29-22 13-24-9-1-13 7-8 13 4 4 8 1 9-3" stroke="var(--pet-secondary)" stroke-width="5.5" stroke-linecap="round"/>`;
+      const chest = evolved ? `<path d="M47 80h26" stroke="var(--pet-secondary)" stroke-width="3" stroke-linecap="round"/><path d="M60 74l5 7-5 9-5-9 5-7Z" fill="var(--pet-secondary)" opacity=".7"/>` : `<path d="M49 79h22" stroke="rgba(255,255,255,.15)" stroke-width="2.5" stroke-linecap="round"/>`;
+      return `<svg id="petCharacterSvg" viewBox="0 0 120 120" fill="none" aria-hidden="true"><g>${ears}${tail}${body}<path d="M41 47q19-11 38 0" stroke="rgba(255,255,255,.16)" stroke-width="2.5" stroke-linecap="round"/><ellipse class="pet-eye pet-eye-left" cx="46" cy="58" rx="4" ry="5" fill="currentColor" ${blink}/><ellipse class="pet-eye pet-eye-right" cx="74" cy="58" rx="4" ry="5" fill="currentColor" ${blink}/><circle cx="38" cy="68" r="4" fill="rgba(255,126,150,.22)"/><circle cx="82" cy="68" r="4" fill="rgba(255,126,150,.22)"/><path id="petMouth" d="M49 69q11 9 22 0" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>${chest}${evolvedMark}</g></svg>`;
+    }
+
+    if (species === "mossling") {
+      const baby = stage === "baby", juvenile = stage === "juvenile", elder = stage === "elder";
+      const body = baby ? `<circle cx="60" cy="67" r="25" fill="rgba(131,230,174,.12)" stroke="currentColor" stroke-width="2.5"/>` : juvenile ? `<path d="M37 46q23-18 46 0v30q0 22-23 27Q37 98 37 76V46Z" fill="rgba(131,230,174,.12)" stroke="currentColor" stroke-width="2.6"/>` : `<path d="M30 46q30-25 60 0v33q0 26-30 30Q30 105 30 79V46Z" fill="rgba(131,230,174,.12)" stroke="currentColor" stroke-width="2.8"/>`;
+      const leaves = elder ? `<path d="M46 43q-9-22 7-26 9 13 0 27M74 43q9-22-7-26-9 13 0 27M60 38q-2-28 14-29 5 16-11 28" fill="rgba(217,255,154,.16)" stroke="var(--pet-secondary)" stroke-width="2.4" stroke-linejoin="round"/>` : `<path d="M46 45q-10-19 6-24 10 13 1 25M74 45q10-19-6-24-10 13-1 25" fill="rgba(217,255,154,.12)" stroke="var(--pet-secondary)" stroke-width="2.2" stroke-linejoin="round"/>`;
+      const vine = `<path d="M82 72q23 2 20 18-3 11-15 7" stroke="var(--pet-secondary)" stroke-width="4" stroke-linecap="round"/>`;
+      const sprig = evolved ? `<path d="M60 55v29M52 62l8 6 8-6M52 74l8 6 8-6" stroke="var(--pet-secondary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>` : `<path d="M52 76q8 5 16 0" stroke="rgba(255,255,255,.14)" stroke-width="2.4" stroke-linecap="round"/>`;
+      return `<svg id="petCharacterSvg" viewBox="0 0 120 120" fill="none" aria-hidden="true"><g>${leaves}${vine}${body}<ellipse class="pet-eye pet-eye-left" cx="48" cy="62" rx="4" ry="5" fill="currentColor" ${blink}/><ellipse class="pet-eye pet-eye-right" cx="72" cy="62" rx="4" ry="5" fill="currentColor" ${blink}/><path id="petMouth" d="M50 72q10 7 20 0" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/>${sprig}${evolvedMark}</g></svg>`;
+    }
+
+    if (species === "bytecat") {
+      const baby = stage === "baby", juvenile = stage === "juvenile", elder = stage === "elder";
+      const body = baby ? `<rect x="37" y="43" width="46" height="42" rx="16" fill="rgba(169,160,255,.12)" stroke="currentColor" stroke-width="2.5"/>` : juvenile ? `<path d="M35 43l10-10h30l10 10v36q0 18-25 24-25-6-25-24V43Z" fill="rgba(169,160,255,.12)" stroke="currentColor" stroke-width="2.6"/>` : `<path d="M29 42l13-14h36l13 14v39q0 22-31 28-31-6-31-28V42Z" fill="rgba(169,160,255,.12)" stroke="currentColor" stroke-width="2.8"/>`;
+      const ears = `<path d="M43 43L30 18l22 15M77 43l13-25-22 15" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>`;
+      const tail = `<path d="M84 72h14v10h-9v10h-12" stroke="var(--pet-secondary)" stroke-width="4" stroke-linecap="square"/>`;
+      const circuit = evolved ? `<path d="M38 54h10v8h9v9h10v-9h9v-8h6M45 82h30" stroke="var(--pet-secondary)" stroke-width="2" stroke-linecap="round"/>` : `<path d="M45 82h10M65 82h10" stroke="rgba(255,255,255,.15)" stroke-width="2" stroke-linecap="round"/>`;
+      return `<svg id="petCharacterSvg" viewBox="0 0 120 120" fill="none" aria-hidden="true"><g>${ears}${tail}${body}<path d="M41 49h38" stroke="rgba(255,255,255,.14)" stroke-width="2.2"/><ellipse class="pet-eye pet-eye-left" cx="48" cy="60" rx="4" ry="4" fill="currentColor" ${blink}/><ellipse class="pet-eye pet-eye-right" cx="72" cy="60" rx="4" ry="4" fill="currentColor" ${blink}/><path id="petMouth" d="M51 70l9 5 9-5" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>${circuit}${evolvedMark}</g></svg>`;
+    }
+
+    if (species === "sparkbot") {
+      const baby = stage === "baby", juvenile = stage === "juvenile", elder = stage === "elder";
+      const body = baby ? `<rect x="35" y="43" width="50" height="39" rx="12" fill="rgba(255,210,118,.12)" stroke="currentColor" stroke-width="2.6"/>` : juvenile ? `<rect x="30" y="39" width="60" height="45" rx="13" fill="rgba(255,210,118,.12)" stroke="currentColor" stroke-width="2.7"/>` : `<rect x="24" y="34" width="72" height="54" rx="15" fill="rgba(255,210,118,.12)" stroke="currentColor" stroke-width="2.9"/>`;
+      const antenna = elder ? `<path d="M60 34V20" stroke="currentColor" stroke-width="2.8"/><circle cx="60" cy="15" r="6" fill="rgba(255,210,118,.16)" stroke="var(--pet-secondary)" stroke-width="2.3"/><path d="M56 15h8" stroke="var(--pet-secondary)" stroke-width="2" stroke-linecap="round"/>` : `<path d="M60 39V27" stroke="currentColor" stroke-width="2.6"/><circle cx="60" cy="22" r="5" fill="rgba(255,210,118,.14)" stroke="var(--pet-secondary)" stroke-width="2"/>`;
+      const arms = `<path d="M30 59H19v15M90 59h11v15" stroke="var(--pet-secondary)" stroke-width="3.5" stroke-linecap="round"/><circle cx="19" cy="77" r="4" fill="rgba(255,210,118,.12)" stroke="var(--pet-secondary)" stroke-width="2"/><circle cx="101" cy="77" r="4" fill="rgba(255,210,118,.12)" stroke="var(--pet-secondary)" stroke-width="2"/>`;
+      const panel = evolved ? `<rect x="38" y="67" width="44" height="10" rx="4" fill="rgba(255,210,118,.07)" stroke="var(--pet-secondary)" stroke-width="1.8"/><path d="M46 72h6M57 72h6M68 72h6" stroke="var(--pet-secondary)" stroke-width="2" stroke-linecap="round"/>` : `<path d="M48 75h24" stroke="rgba(255,255,255,.14)" stroke-width="2.2" stroke-linecap="round"/>`;
+      return `<svg id="petCharacterSvg" viewBox="0 0 120 120" fill="none" aria-hidden="true"><g>${antenna}${arms}${body}<rect x="41" y="49" width="38" height="17" rx="8" fill="rgba(0,0,0,.16)" stroke="var(--pet-secondary)" stroke-width="1.8"/><circle class="pet-eye pet-eye-left" cx="50" cy="57" r="4" fill="currentColor"/><circle class="pet-eye pet-eye-right" cx="70" cy="57" r="4" fill="currentColor"/>${panel}${evolvedMark}</g></svg>`;
+    }
+
+    // moonbun
+    const baby = stage === "baby", juvenile = stage === "juvenile", elder = stage === "elder";
+    const body = baby ? `<ellipse cx="60" cy="70" rx="26" ry="23" fill="rgba(244,167,223,.12)" stroke="currentColor" stroke-width="2.5"/>` : juvenile ? `<path d="M36 49q24-20 48 0v26q0 21-24 26Q36 96 36 75V49Z" fill="rgba(244,167,223,.12)" stroke="currentColor" stroke-width="2.6"/>` : `<path d="M29 48q31-26 62 0v31q0 26-31 30Q29 105 29 79V48Z" fill="rgba(244,167,223,.12)" stroke="currentColor" stroke-width="2.8"/>`;
+    const ears = elder ? `<path d="M44 48L29 10q16-8 24 20M76 48l15-38q-16-8-24 20" stroke="currentColor" stroke-width="4" stroke-linejoin="round"/><path d="M44 42L34 18M76 42l10-24" stroke="var(--pet-secondary)" stroke-width="2.4"/>` : `<path d="M45 48L33 16q13-7 21 21M75 48l12-32q-13-7-21 21" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/>`;
+    const tail = `<path d="M83 77c25-2 26-28 9-29-9 0-13 8-8 14 4 4 8 1 9-3" stroke="var(--pet-secondary)" stroke-width="5.5" stroke-linecap="round"/>`;
+    const crescent = evolved ? `<path d="M63 35q9 7 0 15 12-3 12-13 0-12-12-13Z" fill="var(--pet-secondary)" opacity=".7"/>` : `<path d="M60 36q5 4 0 8 7-2 7-7 0-7-7-8Z" fill="var(--pet-secondary)" opacity=".55"/>`;
+    return `<svg id="petCharacterSvg" viewBox="0 0 120 120" fill="none" aria-hidden="true"><g>${ears}${tail}${body}<ellipse class="pet-eye pet-eye-left" cx="47" cy="62" rx="4" ry="5" fill="currentColor" ${blink}/><ellipse class="pet-eye pet-eye-right" cx="73" cy="62" rx="4" ry="5" fill="currentColor" ${blink}/><circle cx="37" cy="70" r="4" fill="rgba(255,126,150,.20)"/><circle cx="83" cy="70" r="4" fill="rgba(255,126,150,.20)"/><path id="petMouth" d="M50 72q10 7 20 0" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>${crescent}${evolvedMark}</g></svg>`;
+  }
+
+  function renderPetAppearance(character, species, lifeStage, evolved, moodKey) {
+    if (!character) return;
+    const key = `${species}|${lifeStage}|${evolved ? 1 : 0}`;
+    if (character.dataset.appearanceKey !== key) {
+      character.innerHTML = petAppearanceSvg(species, lifeStage, evolved, moodKey);
+      character.dataset.appearanceKey = key;
+    }
+    const svg = character.querySelector("svg");
+    if (svg && moodKey === "sleepy") svg.classList.add("is-sleepy");
+    else if (svg) svg.classList.remove("is-sleepy");
+  }
+
   function renderPet() {
     if(!state.pet)return;
     maybeHatchPet();
@@ -1060,7 +1175,8 @@ button{color:inherit;border:0}
       stopPetWalk();
       const hatchAt=Number(state.pet.hatchAt)||(Date.now()+PET_HATCH_MS),createdAt=Number(state.pet.createdAt)||(hatchAt-PET_HATCH_MS),total=Math.max(1,hatchAt-createdAt);
       const elapsed=clamp(Date.now()-createdAt,0,total),remaining=Math.max(0,hatchAt-Date.now()),progress=clamp(elapsed/total*100,0,100);
-      $("#petMoodBadge").textContent="INCUBATING"; $("#petSpeciesLabel").textContent="UNIDENTIFIED"; $("#petLikesLabel").textContent="INCUBATING"; $("#petTraitLabel").textContent="HATCH PENDING"; $("#petLifeLabel").textContent=`HATCH IN ${formatPetHatchTime(remaining)}`;
+      const eggProfile=PET_SPECIES[state.pet.eggSpecies]||PET_SPECIES.lumafox;
+      $("#petMoodBadge").textContent="INCUBATING"; $("#petSpeciesLabel").textContent=`${eggProfile.label} EGG`; $("#petLikesLabel").textContent=eggProfile.likes; $("#petTraitLabel").textContent=`${eggProfile.hatchMinutes} MIN INCUBATION`; $("#petLifeLabel").textContent=`HATCH IN ${formatPetHatchTime(remaining)}`;
       $("#petHatchCountdown").textContent=formatPetHatchTime(remaining); $("#petIncubationFill").style.width=`${progress}%`;
       if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=`Egg stable. Hatching in ${formatPetHatchTime(remaining)}.`; return;
     }
@@ -1073,7 +1189,11 @@ button{color:inherit;border:0}
     }
     state.pet.fullness=clampPetValue(state.pet.fullness); state.pet.happiness=clampPetValue(state.pet.happiness); state.pet.energy=clampPetValue(state.pet.energy);
     const mood=getPetMood(),lifeStage=getLifeStage(),wasWalking=character.classList.contains("walking");
-    character.className=`pet-character ${mood.key} species-${state.pet.species||"lumafox"} life-${lifeStage.key}`; if(wasWalking)character.classList.add("walking");
+    const speciesKey=state.pet.species||"lumafox";
+    const evolved=Number(state.pet.evolution||0)>0;
+    character.className=`pet-character ${mood.key} species-${speciesKey} life-${lifeStage.key}`;
+    if(wasWalking)character.classList.add("walking");
+    renderPetAppearance(character, speciesKey, lifeStage.key, evolved, mood.key);
     $("#petMoodBadge").textContent=mood.label; $("#petSpeciesLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolvedLabel:profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolutionTrait:profile.trait;
     const ageDays=Math.floor(Number(state.pet.ageMs||0)/86400000),remainingDays=Math.max(0,Math.ceil(Number(state.pet.lifespanDays||profile.lifespanDays)-Number(state.pet.ageMs||0)/86400000));
     $("#petLifeLabel").textContent=`${lifeStage.label} // ${ageDays}D // ${remainingDays}D LEFT`;
@@ -1104,10 +1224,9 @@ button{color:inherit;border:0}
   function beginNewLife(){
     if(state.pet.stage!=="dead")return;
     const now=Date.now();
-    state.pet.stage="egg"; state.pet.previousSpecies=state.pet.species||state.pet.previousSpecies||null; state.pet.species=null; state.pet.createdAt=now; state.pet.hatchAt=now+PET_HATCH_MS;
-    state.pet.fullness=100; state.pet.happiness=100; state.pet.energy=100; state.pet.lastUpdated=now;
-    state.pet.lifespanDays=null; state.pet.ageMs=0; state.pet.lifeStage="egg"; state.pet.evolution=0; state.pet.evolvedAt=null; state.pet.interactions=0;
-    saveState(); renderPet(); petSpeak("A new life cycle is beginning.",5000); petReact(); showToast("NEW COMPANION CYCLE STARTED");
+    state.pet.previousSpecies=state.pet.species||state.pet.previousSpecies||null;
+    const choice=beginIncubation(now);
+    renderPet(); petSpeak(`A new life cycle is beginning. ${choice.label} egg selected.`,5000); petReact(); showToast(`${choice.label} EGG // ${choice.hatchMinutes} MIN INCUBATION`);
   }
 
   function openPetHome(){
@@ -1128,6 +1247,17 @@ button{color:inherit;border:0}
     const name=$("#petModalName").value.trim().slice(0,18);
     if(!name){ petSpeak("Companion name required."); return; }
     state.pet.name=name; saveState(); renderPet(); closeRenameModal(); petSpeak(`Identity updated. I'm ${name}.`); petReact();
+  }
+
+  function resetCompanion(){
+    const confirmed=window.confirm("Reset this companion and start a completely new lifecycle? Current progress will be erased.");
+    if(!confirmed)return;
+    state.pet.previousSpecies=state.pet.species||state.pet.previousSpecies||null;
+    const choice=beginIncubation(Date.now());
+    state.pet.name="NOVA";
+    saveState(); renderPet(); closeRenameModal();
+    petSpeak(`New incubation started. ${choice.label} selected.`,5000); petReact();
+    showToast(`${choice.label} EGG // ${choice.hatchMinutes} MIN INCUBATION`);
   }
 
   function showToast(message){
@@ -1162,7 +1292,7 @@ button{color:inherit;border:0}
   function bindEvents(){
     $("#petFeedBtn").addEventListener("click",feedPet); $("#petPlayBtn").addEventListener("click",playWithPet); $("#petPetBtn").addEventListener("click",petCompanion); $("#petCharacter").addEventListener("click",()=>state.pet.stage==="dead"?beginNewLife():petCompanion()); $("#petEggBtn").addEventListener("click",inspectPetEgg);
     $("#petRenameBtn").addEventListener("click",openRenameModal); $("#petInstallBtn").addEventListener("click",promptPwaInstall);
-    $("#petModalCancel").addEventListener("click",closeRenameModal); $("#petModalSave").addEventListener("click",saveRename);
+    $("#petModalCancel").addEventListener("click",closeRenameModal); $("#petModalSave").addEventListener("click",saveRename); $("#petModalReset").addEventListener("click",resetCompanion);
     $("#petModalBackdrop").addEventListener("mousedown",e=>{if(e.target===e.currentTarget)closeRenameModal();});
     document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRenameModal();});
     document.addEventListener("visibilitychange",()=>{if(!document.hidden){updatePetDecay();renderPet();saveState();}});
