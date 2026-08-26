@@ -366,6 +366,33 @@ button{color:inherit;border:0}
     display: none;
   }
 
+  .pet-home .pet-life-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    color: var(--muted);
+    font: 10px/1 var(--mono);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+
+  .pet-home .pet-life-badge strong { color: var(--pet-color, var(--accent)); }
+
+  .pet-character.life-baby { width:78px; height:78px; bottom:34px; }
+  .pet-character.life-juvenile { width:89px; height:89px; bottom:30px; }
+  .pet-character.life-adult { width:102px; height:102px; bottom:26px; }
+  .pet-character.life-elder { width:112px; height:112px; bottom:22px; opacity:.9; }
+  .pet-character.life-elder svg { filter:saturate(.72); }
+
+  .pet-home.evolved .pet-room {
+    box-shadow: inset 0 0 0 1px rgba(var(--accent-rgb), .055), inset 0 0 48px rgba(var(--accent-rgb), .025);
+  }
+  .pet-home.evolved .pet-profile { border-color: rgba(var(--accent-rgb), .16); }
+  .pet-home.evolved .pet-character { filter: drop-shadow(0 8px 14px rgba(0,0,0,.24)) drop-shadow(0 0 18px color-mix(in srgb, var(--pet-color) 24%, transparent)); }
+  .pet-home.evolved .pet-character .pet-chest { stroke: var(--pet-color); opacity: .5; }
+  .pet-home.dead-stage .pet-character { opacity: .68; }
+
   .pet-home.egg-stage .pet-character,
   .pet-home.egg-stage .pet-bowl,
   .pet-home.egg-stage .pet-toy,
@@ -703,6 +730,7 @@ button{color:inherit;border:0}
       <div><span>TYPE</span><strong id="petSpeciesLabel">UNIDENTIFIED</strong></div>
       <div><span>LIKES</span><strong id="petLikesLabel">INCUBATING</strong></div>
       <div><span>TRAIT</span><strong id="petTraitLabel">UNKNOWN</strong></div>
+      <div><span>LIFE</span><strong id="petLifeLabel">INCUBATING</strong></div>
     </div>
 
     <div id="petIncubation" class="pet-incubation" aria-label="Egg incubation progress">
@@ -779,16 +807,21 @@ button{color:inherit;border:0}
       energy: 100,
       lastUpdated: Date.now(),
       interactions: 0,
+      lifespanDays: null,
+      ageMs: 0,
+      lifeStage: "egg",
+      evolution: 0,
+      evolvedAt: null,
     },
     prefs: { accent: "#59d9ff", primary: "#0c121c" }
   };
 
   const PET_SPECIES = {
-    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
-    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
-    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
-    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
-    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
+    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", lifespanDays:24, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
+    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", lifespanDays:30, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
+    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", lifespanDays:21, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
+    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", lifespanDays:18, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
+    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", lifespanDays:27, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
   };
 
   const $ = (selector, root=document) => root.querySelector(selector);
@@ -819,6 +852,14 @@ button{color:inherit;border:0}
     if (!merged.pet?.stage) {
       merged.pet = { ...defaults.pet, createdAt: Date.now(), hatchAt: Date.now() + PET_HATCH_MS, lastUpdated: Date.now() };
     }
+    if (merged.pet.stage === "hatched") {
+      const profile = PET_SPECIES[merged.pet.species] || PET_SPECIES.lumafox;
+      merged.pet.lifespanDays = Number(merged.pet.lifespanDays) || profile.lifespanDays;
+      merged.pet.ageMs = Number(merged.pet.ageMs) || 0;
+      merged.pet.lifeStage = merged.pet.lifeStage || "baby";
+      merged.pet.evolution = Number(merged.pet.evolution) || 0;
+      merged.pet.evolvedAt = merged.pet.evolvedAt || null;
+    }
     return merged;
   }
 
@@ -844,6 +885,44 @@ button{color:inherit;border:0}
 
   function getPetSpeciesProfile() { return PET_SPECIES[state.pet?.species] || PET_SPECIES.lumafox; }
 
+  const LIFE_STAGES = [
+    { key:"baby", label:"BABY", start:0.00, end:0.20 },
+    { key:"juvenile", label:"JUVENILE", start:0.20, end:0.45 },
+    { key:"adult", label:"ADULT", start:0.45, end:0.82 },
+    { key:"elder", label:"ELDER", start:0.82, end:1.00 }
+  ];
+
+  function petAgeRatio(now=Date.now()) {
+    const profile=getPetSpeciesProfile();
+    const lifespanMs=Math.max(1,Number(state.pet.lifespanDays||profile.lifespanDays||24)*86400000);
+    return clamp(Number(state.pet.ageMs||0)/lifespanMs,0,1);
+  }
+
+  function getLifeStage(now=Date.now()) {
+    const ratio=petAgeRatio(now);
+    return LIFE_STAGES.find(stage=>ratio>=stage.start&&ratio<stage.end)||LIFE_STAGES[LIFE_STAGES.length-1];
+  }
+
+  function maybeEvolvePet(now=Date.now()) {
+    if(state.pet.stage!=="hatched"||!state.pet.species)return false;
+    if(petAgeRatio(now)>=0.45&&Number(state.pet.evolution||0)<1){
+      state.pet.evolution=1; state.pet.evolvedAt=now;
+      const profile=getPetSpeciesProfile();
+      petSpeak(`${profile.label} evolved into ${profile.evolvedLabel}.`,6500);
+      showToast(`${profile.evolvedLabel} EVOLVED`); petReact(); saveState(); return true;
+    }
+    return false;
+  }
+
+  function handlePetDeath(now=Date.now()) {
+    if(state.pet.stage==="dead")return false;
+    state.pet.stage="dead"; state.pet.lifeStage="dead";
+    state.pet.ageMs=Math.max(state.pet.ageMs,Number(state.pet.lifespanDays||getPetSpeciesProfile().lifespanDays)*86400000);
+    state.pet.lastUpdated=now; stopPetWalk(); saveState();
+    petSpeak(`${state.pet.name||"Companion"} has reached the end of its life.`,12000);
+    showToast("COMPANION LIFECYCLE COMPLETE"); return true;
+  }
+
   function maybeHatchPet(now=Date.now()) {
     if (state.pet.stage !== "egg") return false;
     const hatchAt = Number(state.pet.hatchAt) || (now + PET_HATCH_MS);
@@ -863,6 +942,11 @@ button{color:inherit;border:0}
     state.pet.energy = 90;
     state.pet.lastUpdated = now;
     state.pet.interactions = 0;
+    state.pet.lifespanDays = profile.lifespanDays;
+    state.pet.ageMs = 0;
+    state.pet.lifeStage = "baby";
+    state.pet.evolution = 0;
+    state.pet.evolvedAt = null;
     saveState();
     const profile = PET_SPECIES[species];
     petSpeak(`Shell opened. ${profile.label} detected!`, 6000);
@@ -887,19 +971,25 @@ button{color:inherit;border:0}
   function clampPetValue(value) { return clamp(Number(value) || 0, 0, 100); }
 
   function updatePetDecay(now=Date.now()) {
-    if (!state.pet || typeof state.pet !== "object") state.pet = { ...defaults.pet, lastUpdated: now };
-    if (maybeHatchPet(now)) return;
-    if (state.pet.stage === "egg") { state.pet.lastUpdated = now; return; }
-    const profile = getPetSpeciesProfile();
-    const last = Number(state.pet.lastUpdated) || now;
-    const elapsedHours = clamp((now-last)/3600000, 0, 72);
-    if (elapsedHours > 0) {
-      state.pet.fullness = clampPetValue(state.pet.fullness - elapsedHours * 2.8 * profile.hungerRate);
-      state.pet.happiness = clampPetValue(state.pet.happiness - elapsedHours * 1.35 * profile.socialRate);
-      const baseRecovery = state.pet.fullness < 20 ? 1.2 : 3.1;
-      state.pet.energy = clampPetValue(state.pet.energy + elapsedHours * baseRecovery * profile.recoveryRate);
-      state.pet.lastUpdated = now;
+    if(!state.pet||typeof state.pet!=="object")state.pet={...defaults.pet,lastUpdated:now};
+    if(maybeHatchPet(now))return;
+    if(state.pet.stage==="egg"||state.pet.stage==="dead"){state.pet.lastUpdated=now;return;}
+    const profile=getPetSpeciesProfile();
+    const last=Number(state.pet.lastUpdated)||now;
+    const elapsedMs=Math.max(0,now-last);
+    const elapsedHours=clamp(elapsedMs/3600000,0,72);
+    state.pet.lifespanDays=Number(state.pet.lifespanDays)||profile.lifespanDays;
+    if(elapsedHours>0){
+      state.pet.ageMs=Number(state.pet.ageMs||0)+elapsedMs;
+      state.pet.fullness=clampPetValue(state.pet.fullness-elapsedHours*2.8*profile.hungerRate);
+      state.pet.happiness=clampPetValue(state.pet.happiness-elapsedHours*1.35*profile.socialRate);
+      const baseRecovery=state.pet.fullness<20?1.2:3.1;
+      state.pet.energy=clampPetValue(state.pet.energy+elapsedHours*baseRecovery*profile.recoveryRate);
     }
+    state.pet.lastUpdated=now;
+    if(state.pet.ageMs>=Number(state.pet.lifespanDays)*86400000){handlePetDeath(now);return;}
+    state.pet.lifeStage=getLifeStage(now).key;
+    maybeEvolvePet(now);
   }
 
   function getPetMood() {
@@ -952,35 +1042,39 @@ button{color:inherit;border:0}
   function renderPet() {
     if(!state.pet)return;
     maybeHatchPet();
-    const home=$("#petHome"), character=$("#petCharacter"); if(!home||!character)return;
-    const isEgg=state.pet.stage==="egg", name=String(state.pet.name||defaults.pet.name).trim().slice(0,18)||defaults.pet.name;
-    const profile=isEgg?null:getPetSpeciesProfile();
-    home.classList.toggle("egg-stage",isEgg);
+    const home=$("#petHome"),character=$("#petCharacter"); if(!home||!character)return;
+    const isEgg=state.pet.stage==="egg",isDead=state.pet.stage==="dead";
+    const name=String(state.pet.name||defaults.pet.name).trim().slice(0,18)||defaults.pet.name;
+    const profile=getPetSpeciesProfile();
+    home.classList.toggle("egg-stage",isEgg); home.classList.toggle("dead-stage",isDead); home.classList.toggle("evolved",Number(state.pet.evolution||0)>0&&!isDead);
     home.style.setProperty("--pet-color",profile?.color||"var(--accent)");
     $("#petName").textContent=name.toUpperCase();
-    [$("#petFeedBtn"),$("#petPlayBtn"),$("#petPetBtn")].forEach(btn=>{if(btn)btn.disabled=isEgg;});
+    [$("#petFeedBtn"),$("#petPlayBtn"),$("#petPetBtn")].forEach(btn=>{if(btn)btn.disabled=isEgg||isDead;});
     if(isEgg){
       stopPetWalk();
-      const hatchAt=Number(state.pet.hatchAt)||(Date.now()+PET_HATCH_MS), createdAt=Number(state.pet.createdAt)||(hatchAt-PET_HATCH_MS), total=Math.max(1,hatchAt-createdAt);
-      const elapsed=clamp(Date.now()-createdAt,0,total), remaining=Math.max(0,hatchAt-Date.now()), progress=clamp(elapsed/total*100,0,100);
-      $("#petMoodBadge").textContent="INCUBATING"; $("#petSpeciesLabel").textContent="UNIDENTIFIED"; $("#petLikesLabel").textContent="UNKNOWN"; $("#petTraitLabel").textContent="HATCH PENDING";
+      const hatchAt=Number(state.pet.hatchAt)||(Date.now()+PET_HATCH_MS),createdAt=Number(state.pet.createdAt)||(hatchAt-PET_HATCH_MS),total=Math.max(1,hatchAt-createdAt);
+      const elapsed=clamp(Date.now()-createdAt,0,total),remaining=Math.max(0,hatchAt-Date.now()),progress=clamp(elapsed/total*100,0,100);
+      $("#petMoodBadge").textContent="INCUBATING"; $("#petSpeciesLabel").textContent="UNIDENTIFIED"; $("#petLikesLabel").textContent="INCUBATING"; $("#petTraitLabel").textContent="HATCH PENDING"; $("#petLifeLabel").textContent=`HATCH IN ${formatPetHatchTime(remaining)}`;
       $("#petHatchCountdown").textContent=formatPetHatchTime(remaining); $("#petIncubationFill").style.width=`${progress}%`;
-      if(Date.now()>=petMessageUntil&& $("#petSpeech")) $("#petSpeech").textContent=`Egg stable. Hatching in ${formatPetHatchTime(remaining)}.`;
-      return;
+      if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=`Egg stable. Hatching in ${formatPetHatchTime(remaining)}.`; return;
+    }
+    $("#petIncubationFill").style.width="0%";
+    if(isDead){
+      stopPetWalk(); character.className=`pet-character life-elder sleepy species-${state.pet.species||"lumafox"}`; character.style.left="50%"; character.style.bottom="30px";
+      $("#petMoodBadge").textContent="RESTING"; $("#petSpeciesLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolvedLabel:profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolutionTrait:profile.trait;
+      $("#petLifeLabel").textContent=`LIVED ${Math.round(Number(state.pet.lifespanDays||profile.lifespanDays))} DAYS`;
+      if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=`${name} is resting. Life complete.`; return;
     }
     state.pet.fullness=clampPetValue(state.pet.fullness); state.pet.happiness=clampPetValue(state.pet.happiness); state.pet.energy=clampPetValue(state.pet.energy);
-    const mood=getPetMood();
-    const wasWalking = character.classList.contains("walking");
-    character.className=`pet-character ${mood.key} species-${state.pet.species||"lumafox"}`;
-    if (wasWalking) character.classList.add("walking");
-    $("#petMoodBadge").textContent=mood.label; $("#petSpeciesLabel").textContent=profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=profile.trait;
-    const score=(state.pet.fullness+state.pet.happiness+state.pet.energy)/3;
-    [["petFullness",state.pet.fullness],["petHappiness",state.pet.happiness],["petEnergy",state.pet.energy]].forEach(([prefix,value])=>{
-      const rounded=Math.round(value), valueEl=$(`#${prefix}Value`), fillEl=$(`#${prefix}Fill`); if(valueEl)valueEl.textContent=`${rounded}%`; if(fillEl)fillEl.style.width=`${value}%`;
-    });
+    const mood=getPetMood(),lifeStage=getLifeStage(),wasWalking=character.classList.contains("walking");
+    character.className=`pet-character ${mood.key} species-${state.pet.species||"lumafox"} life-${lifeStage.key}`; if(wasWalking)character.classList.add("walking");
+    $("#petMoodBadge").textContent=mood.label; $("#petSpeciesLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolvedLabel:profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolutionTrait:profile.trait;
+    const ageDays=Math.floor(Number(state.pet.ageMs||0)/86400000),remainingDays=Math.max(0,Math.ceil(Number(state.pet.lifespanDays||profile.lifespanDays)-Number(state.pet.ageMs||0)/86400000));
+    $("#petLifeLabel").textContent=`${lifeStage.label} // ${ageDays}D // ${remainingDays}D LEFT`;
+    [["petFullness",state.pet.fullness],["petHappiness",state.pet.happiness],["petEnergy",state.pet.energy]].forEach(([prefix,value])=>{const rounded=Math.round(value),v=$(`#${prefix}Value`),f=$(`#${prefix}Fill`);if(v)v.textContent=`${rounded}%`;if(f)f.style.width=`${value}%`;});
     const mouth=$("#petMouth"); if(mouth)mouth.setAttribute("d",petMouthPath(mood.key));
     if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=mood.message;
-    if (!walkTimeout && !document.hidden) schedulePetWalk(1200 + Math.random()*1600);
+    if(!walkTimeout&&!document.hidden)schedulePetWalk(1000+Math.random()*1600);
   }
 
   function petSpeak(message,duration=2800){ const speech=$("#petSpeech"); if(speech)speech.textContent=message; petMessageUntil=Date.now()+duration; }
@@ -1001,7 +1095,19 @@ button{color:inherit;border:0}
     updatePetDecay(); if(state.pet.stage==="egg"){inspectPetEgg();return;}
     const profile=getPetSpeciesProfile(); state.pet.happiness=clampPetValue(state.pet.happiness+12*profile.petAffinity); state.pet.energy=clampPetValue(state.pet.energy+2); commitPetInteraction(profile.petMessage);
   }
-  function openPetHome(){ if(state.pet.stage==="egg"){const remaining=Math.max(0,Number(state.pet.hatchAt)-Date.now());petSpeak(`Incubation online. Hatching in ${formatPetHatchTime(remaining)}.`);}else petSpeak(`${state.pet.name||defaults.pet.name} online.`); }
+  function beginNewLife(){
+    if(state.pet.stage!=="dead")return;
+    const now=Date.now();
+    state.pet.stage="egg"; state.pet.species=null; state.pet.createdAt=now; state.pet.hatchAt=now+PET_HATCH_MS;
+    state.pet.fullness=100; state.pet.happiness=100; state.pet.energy=100; state.pet.lastUpdated=now;
+    state.pet.lifespanDays=null; state.pet.ageMs=0; state.pet.lifeStage="egg"; state.pet.evolution=0; state.pet.evolvedAt=null; state.pet.interactions=0;
+    saveState(); renderPet(); petSpeak("A new life cycle is beginning.",5000); petReact(); showToast("NEW COMPANION CYCLE STARTED");
+  }
+
+  function openPetHome(){
+    if(state.pet.stage==="dead"){ beginNewLife(); return; }
+    if(state.pet.stage==="egg"){const remaining=Math.max(0,Number(state.pet.hatchAt)-Date.now());petSpeak(`Incubation online. Hatching in ${formatPetHatchTime(remaining)}.`);}else petSpeak(`${state.pet.name||defaults.pet.name} online.`);
+  }
 
   function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#039;"}[ch]));}
 
@@ -1048,7 +1154,7 @@ button{color:inherit;border:0}
   }
 
   function bindEvents(){
-    $("#petFeedBtn").addEventListener("click",feedPet); $("#petPlayBtn").addEventListener("click",playWithPet); $("#petPetBtn").addEventListener("click",petCompanion); $("#petCharacter").addEventListener("click",petCompanion); $("#petEggBtn").addEventListener("click",inspectPetEgg);
+    $("#petFeedBtn").addEventListener("click",feedPet); $("#petPlayBtn").addEventListener("click",playWithPet); $("#petPetBtn").addEventListener("click",petCompanion); $("#petCharacter").addEventListener("click",()=>state.pet.stage==="dead"?beginNewLife():petCompanion()); $("#petEggBtn").addEventListener("click",inspectPetEgg);
     $("#petRenameBtn").addEventListener("click",openRenameModal); $("#petInstallBtn").addEventListener("click",promptPwaInstall);
     $("#petModalCancel").addEventListener("click",closeRenameModal); $("#petModalSave").addEventListener("click",saveRename);
     $("#petModalBackdrop").addEventListener("mousedown",e=>{if(e.target===e.currentTarget)closeRenameModal();});
@@ -1057,7 +1163,7 @@ button{color:inherit;border:0}
     window.addEventListener("pagehide",()=>{updatePetDecay();saveState();});
   }
 
-  function init(){applyPrefs();setupPwa();bindEvents();updatePetDecay();renderPet();schedulePetWalk(1800);setInterval(()=>{maybeHatchPet();renderPet();},1000);setInterval(()=>{updatePetDecay();renderPet();},60000);}
+  function init(){applyPrefs();setupPwa();bindEvents();updatePetDecay();renderPet();schedulePetWalk(1800);setInterval(()=>{updatePetDecay();renderPet();saveState();},1000);setInterval(()=>{updatePetDecay();renderPet();saveState();},60000);}
   init();
 })();
 
