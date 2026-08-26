@@ -718,6 +718,25 @@ button{color:inherit;border:0}
     padding: 14px clamp(24px, 6vw, 96px) 14px;
   }
 
+  .pet-happiness-feature {
+    padding: 0 0 4px;
+  }
+
+  .pet-happiness-feature .pet-stat-line {
+    font-size: 12px;
+    letter-spacing: .12em;
+  }
+
+  .pet-happiness-feature .pet-stat-track {
+    height: 7px;
+    margin-top: 7px;
+    background: rgba(255,255,255,.045);
+  }
+
+  .pet-happiness-feature .pet-stat-fill {
+    box-shadow: 0 0 14px rgba(var(--accent-rgb), .18);
+  }
+
   .pet-stat {
     display: grid;
     gap: 5px;
@@ -978,13 +997,13 @@ button{color:inherit;border:0}
     </div>
 
     <div class="pet-stats" aria-label="Companion status">
+      <div class="pet-stat pet-happiness-feature">
+        <div class="pet-stat-line"><span>HAPPINESS</span><strong id="petHappinessValue">82%</strong></div>
+        <div class="pet-stat-track"><div id="petHappinessFill" class="pet-stat-fill"></div></div>
+      </div>
       <div class="pet-stat">
         <div class="pet-stat-line"><span>FULLNESS</span><strong id="petFullnessValue">78%</strong></div>
         <div class="pet-stat-track"><div id="petFullnessFill" class="pet-stat-fill"></div></div>
-      </div>
-      <div class="pet-stat">
-        <div class="pet-stat-line"><span>HAPPINESS</span><strong id="petHappinessValue">82%</strong></div>
-        <div class="pet-stat-track"><div id="petHappinessFill" class="pet-stat-fill"></div></div>
       </div>
       <div class="pet-stat">
         <div class="pet-stat-line"><span>ENERGY</span><strong id="petEnergyValue">86%</strong></div>
@@ -1073,16 +1092,17 @@ button{color:inherit;border:0}
       evolution: 0,
       evolvedAt: null,
       previousSpecies: null,
+      nextRestAt: null,
     },
     prefs: { accent: "#59d9ff", primary: "#0c121c" }
   };
 
   const PET_SPECIES = {
-    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", glow:"rgba(115,230,255,.22)", lifespanDays:24, hatchMinutes:4, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
-    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", glow:"rgba(131,230,174,.20)", lifespanDays:30, hatchMinutes:7, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
-    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", glow:"rgba(169,160,255,.22)", lifespanDays:21, hatchMinutes:5, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
-    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", glow:"rgba(255,210,118,.22)", lifespanDays:18, hatchMinutes:3, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
-    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", glow:"rgba(244,167,223,.22)", lifespanDays:27, hatchMinutes:6, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
+    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", glow:"rgba(115,230,255,.22)", lifespanDays:24, hatchMinutes:4, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, awakeRecovery:.9, restRecovery:2.0, sleepRecovery:4.8, restThreshold:16, sleepThreshold:7, wakeThreshold:42, activityBias:1.25, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
+    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", glow:"rgba(131,230,174,.20)", lifespanDays:30, hatchMinutes:7, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, awakeRecovery:.82, restRecovery:2.9, sleepRecovery:5.4, restThreshold:24, sleepThreshold:10, wakeThreshold:55, activityBias:.72, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
+    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", glow:"rgba(169,160,255,.22)", lifespanDays:21, hatchMinutes:5, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, awakeRecovery:.88, restRecovery:1.8, sleepRecovery:4.4, restThreshold:14, sleepThreshold:6, wakeThreshold:40, activityBias:1.22, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
+    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", glow:"rgba(255,210,118,.22)", lifespanDays:18, hatchMinutes:3, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, awakeRecovery:1.15, restRecovery:3.4, sleepRecovery:6.2, restThreshold:12, sleepThreshold:5, wakeThreshold:34, activityBias:.9, restCycleMs:4.5*60*1000, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
+    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", glow:"rgba(244,167,223,.22)", lifespanDays:27, hatchMinutes:6, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, awakeRecovery:.82, restRecovery:2.6, sleepRecovery:6.0, restThreshold:28, sleepThreshold:11, wakeThreshold:58, activityBias:.62, restCycleMs:9*60*1000, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
   };
 
   const $ = (selector, root=document) => root.querySelector(selector);
@@ -1133,6 +1153,7 @@ button{color:inherit;border:0}
         merged.pet.hatchAt = Number(merged.pet.createdAt || Date.now()) + Number(profile.hatchMinutes || 10) * 60000;
       }
     }
+    merged.pet.nextRestAt = Number.isFinite(Number(merged.pet.nextRestAt)) ? Number(merged.pet.nextRestAt) : null;
     merged.pet.cleanliness = Number.isFinite(Number(merged.pet.cleanliness)) ? clamp(Number(merged.pet.cleanliness),0,100) : 100;
     merged.pet.habitatCleanliness = Number.isFinite(Number(merged.pet.habitatCleanliness)) ? clamp(Number(merged.pet.habitatCleanliness),0,100) : 100;
     if (merged.pet.stage === "hatched") {
@@ -1257,6 +1278,7 @@ button{color:inherit;border:0}
     state.pet.fullness = 88;
     state.pet.happiness = 92;
     state.pet.energy = 90;
+    state.pet.nextRestAt = null;
     state.pet.cleanliness = 100;
     state.pet.habitatCleanliness = clampPetValue(state.pet.habitatCleanliness ?? 100);
     state.pet.lastUpdated = now;
@@ -1301,8 +1323,12 @@ button{color:inherit;border:0}
       state.pet.ageMs=Number(state.pet.ageMs||0)+elapsedMs;
       state.pet.fullness=clampPetValue(state.pet.fullness-elapsedHours*2.8*profile.hungerRate);
       state.pet.happiness=clampPetValue(state.pet.happiness-elapsedHours*1.35*profile.socialRate);
-      const baseRecovery=state.pet.fullness<20?1.2:3.1;
-      state.pet.energy=clampPetValue(state.pet.energy+elapsedHours*baseRecovery*profile.recoveryRate);
+      const rawEnergy=clampPetValue(state.pet.energy);
+      let recoveryRate=Number(profile.awakeRecovery||1);
+      if(rawEnergy <= Number(profile.sleepThreshold ?? 12)) recoveryRate=Number(profile.sleepRecovery||4.5);
+      else if(rawEnergy <= Number(profile.restThreshold ?? 22)) recoveryRate=Number(profile.restRecovery||2.2);
+      const fullnessPenalty=state.pet.fullness<20 ? .78 : 1;
+      state.pet.energy=clampPetValue(rawEnergy + elapsedHours*3.1*recoveryRate*profile.recoveryRate*fullnessPenalty);
       state.pet.cleanliness=clampPetValue((state.pet.cleanliness ?? 100)-elapsedHours*1.55);
       state.pet.habitatCleanliness=clampPetValue((state.pet.habitatCleanliness ?? 100)-elapsedHours*0.72);
       if(state.pet.cleanliness < 45) state.pet.habitatCleanliness=clampPetValue(state.pet.habitatCleanliness-elapsedHours*0.45);
@@ -1311,13 +1337,29 @@ button{color:inherit;border:0}
     if(state.pet.ageMs>=Number(state.pet.lifespanDays)*86400000){handlePetDeath(now);return;}
     state.pet.lifeStage=getLifeStage(now).key;
     maybeEvolvePet(now);
+    const nowMood = getPetMood();
+    const cycleMs = Number(profile.restCycleMs || 0);
+    const lowEnergy = state.pet.energy <= Number(profile.restThreshold ?? 22);
+    if (cycleMs > 0 && state.pet.energy > Number(profile.restThreshold ?? 22) && Number(profile.activityBias||1) < 1) {
+      if (!Number(state.pet.nextRestAt)) state.pet.nextRestAt = now + cycleMs / Math.max(.5, Number(profile.activityBias||1));
+      if (now >= Number(state.pet.nextRestAt)) {
+        state.pet.energy = Math.min(state.pet.energy, Number(profile.restThreshold ?? 22) - .5);
+        state.pet.nextRestAt = now + cycleMs * (0.85 + Math.random()*0.35);
+      }
+    } else if (!lowEnergy && Number(profile.activityBias||1) >= 1) {
+      state.pet.nextRestAt = null;
+    }
+    if (nowMood.key === "sleeping" || nowMood.key === "resting") {
+      if (state.pet.nextRestAt && state.pet.energy > Number(profile.wakeThreshold ?? 42)) state.pet.nextRestAt = null;
+    }
   }
 
   function getPetMood() {
+    const profile=getPetSpeciesProfile();
     const fullness=clampPetValue(state.pet.fullness), happiness=clampPetValue(state.pet.happiness), energy=clampPetValue(state.pet.energy), cleanliness=clampPetValue(state.pet.cleanliness);
     const average=(fullness+happiness+energy+cleanliness)/4;
-    if (energy < 12) return { key:"sleeping", label:"SLEEPING", message:"Deep recharge mode. Quiet hours." };
-    if (energy < 22) return { key:"resting", label:"RESTING", message:"Taking a quiet recharge break." };
+    if (energy <= Number(profile.sleepThreshold ?? 12)) return { key:"sleeping", label:"SLEEPING", message:"Deep recharge mode. Quiet hours." };
+    if (energy <= Number(profile.restThreshold ?? 22)) return { key:"resting", label:"RESTING", message:"Taking a quiet recharge break." };
     if (cleanliness < 22) return { key:"dirty", label:"DIRTY", message:"Bath protocol requested. I need a clean-up." };
     if (fullness < 24) return { key:"hungry", label:"HUNGRY", message:"Food protocol requested." };
     if (happiness < 28) return { key:"lonely", label:"LONELY", message:"Could use some attention." };
