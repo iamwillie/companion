@@ -275,6 +275,130 @@ button{color:inherit;border:0}
 
   .pet-character.sleepy svg .pet-eye { transform-origin: center; }
 
+  .pet-character.resting {
+    cursor: default;
+  }
+
+  .pet-character.sleeping {
+    cursor: default;
+  }
+
+  .pet-character.resting:hover,
+  .pet-character.sleeping:hover {
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,.24)) drop-shadow(0 0 12px rgba(140,124,255,.12));
+  }
+
+  .pet-character.resting svg {
+    animation: petRestBreathe 2.8s ease-in-out infinite;
+  }
+
+  .pet-character.sleeping svg {
+    animation: petDeepSleep 4.8s ease-in-out infinite;
+  }
+
+  .pet-character.species-lumafox.resting svg { animation-name: restFox; }
+  .pet-character.species-lumafox.sleeping svg { animation-name: sleepFox; }
+  .pet-character.species-mossling.resting svg { animation-name: restMoss; }
+  .pet-character.species-mossling.sleeping svg { animation-name: sleepMoss; }
+  .pet-character.species-bytecat.resting svg { animation-name: restByte; }
+  .pet-character.species-bytecat.sleeping svg { animation-name: sleepByte; }
+  .pet-character.species-sparkbot.resting svg { animation-name: restSpark; }
+  .pet-character.species-sparkbot.sleeping svg { animation-name: sleepSpark; }
+  .pet-character.species-moonbun.resting svg { animation-name: restMoon; }
+  .pet-character.species-moonbun.sleeping svg { animation-name: sleepMoon; }
+
+  @keyframes petRestBreathe { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(1px) scale(.992,1.01)} }
+  @keyframes petDeepSleep { 0%,100%{transform:translateY(2px) scale(.985)} 50%{transform:translateY(4px) scale(.975)} }
+  @keyframes restFox { 0%,100%{transform:translateY(0) rotate(0)} 50%{transform:translateY(2px) rotate(-1.2deg)} }
+  @keyframes sleepFox { 0%,100%{transform:translateY(3px) rotate(0) scale(.97)} 50%{transform:translateY(5px) rotate(1.4deg) scale(.965)} }
+  @keyframes restMoss { 0%,100%{transform:rotate(-1deg) translateY(0)} 50%{transform:rotate(1.5deg) translateY(1px)} }
+  @keyframes sleepMoss { 0%,100%{transform:rotate(-2deg) translateY(2px) scale(.98)} 50%{transform:rotate(2deg) translateY(4px) scale(.975)} }
+  @keyframes restByte { 0%,100%{transform:translateY(0)} 35%{transform:translateY(1px) rotate(-1deg)} 70%{transform:translateY(1px) rotate(1deg)} }
+  @keyframes sleepByte { 0%,100%{transform:translateY(3px) scale(.97)} 50%{transform:translateY(5px) scale(.965)} }
+  @keyframes restSpark { 0%,100%{transform:translateY(0) scale(1)} 50%{transform:translateY(1px) scale(1.015)} }
+  @keyframes sleepSpark { 0%,100%{transform:translateY(3px) scale(.975)} 50%{transform:translateY(4px) scale(.965)} }
+  @keyframes restMoon { 0%,100%{transform:translateY(0) rotate(-1deg)} 50%{transform:translateY(2px) rotate(1deg)} }
+  @keyframes sleepMoon { 0%,100%{transform:translateY(3px) rotate(-1.5deg) scale(.975)} 50%{transform:translateY(6px) rotate(1.5deg) scale(.965)} }
+
+  .pet-sleep-indicator {
+    position:absolute;
+    z-index:5;
+    left:50%;
+    top:18px;
+    transform:translateX(-50%);
+    min-width:96px;
+    padding:6px 10px;
+    border:1px solid rgba(140,124,255,.24);
+    border-radius:999px;
+    background:rgba(7,10,18,.82);
+    color:#b9b2ff;
+    box-shadow:0 0 22px rgba(140,124,255,.08), inset 0 1px 0 rgba(255,255,255,.035);
+    font:9px/1 var(--mono);
+    letter-spacing:.14em;
+    text-align:center;
+    text-transform:uppercase;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+
+  .pet-home.resting .pet-sleep-indicator,
+  .pet-home.sleeping .pet-sleep-indicator {
+    opacity:1;
+    animation:sleepBadge 2.4s ease-in-out infinite;
+  }
+
+  .pet-home.sleeping .pet-sleep-indicator {
+    color:#d2ceff;
+    border-color:rgba(140,124,255,.34);
+  }
+
+  .pet-home.resting .pet-bed,
+  .pet-home.sleeping .pet-bed {
+    border-color:rgba(140,124,255,.26);
+    background:radial-gradient(ellipse at center, rgba(140,124,255,.10), rgba(var(--accent-rgb),.02));
+    box-shadow:0 0 24px rgba(140,124,255,.08);
+  }
+
+  .pet-home.sleeping .pet-window { opacity:.72; }
+  .pet-home.resting .pet-window { opacity:.88; }
+
+  @keyframes sleepBadge { 0%,100%{transform:translateX(-50%) translateY(0);opacity:.82} 50%{transform:translateX(-50%) translateY(-2px);opacity:1} }
+
+  .pet-character.resting .pet-eye,
+  .pet-character.sleeping .pet-eye {
+    transform:scaleY(.16);
+    transform-origin:center;
+  }
+
+  .pet-character.sleeping .pet-eye { opacity:.72; }
+
+  .pet-character.sleeping .pet-chest { opacity:.72; }
+
+  .pet-character.sleeping::after {
+    content:"z";
+    position:absolute;
+    right:-8px;
+    top:4px;
+    color:#b9b2ff;
+    font:700 14px/1 var(--mono);
+    text-shadow:0 0 10px rgba(140,124,255,.22);
+    animation:sleepZ 2.6s ease-in-out infinite;
+  }
+
+  .pet-character.resting::after {
+    content:"~";
+    position:absolute;
+    right:-6px;
+    top:10px;
+    color:#8c7cff;
+    font:700 12px/1 var(--mono);
+    animation:restWave 2.1s ease-in-out infinite;
+  }
+
+  @keyframes sleepZ { 0%,100%{transform:translate(0,0) scale(.9);opacity:.3} 50%{transform:translate(5px,-9px) scale(1.1);opacity:1} }
+  @keyframes restWave { 0%,100%{transform:translateX(0);opacity:.35} 50%{transform:translateX(4px);opacity:.9} }
+
   .pet-character.hungry {
     color: var(--warning);
   }
@@ -511,6 +635,83 @@ button{color:inherit;border:0}
     cursor: not-allowed;
   }
 
+  .pet-character.dirty {
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.24)) drop-shadow(0 0 11px rgba(244,201,122,.10)) saturate(.78);
+  }
+
+  .pet-character.dirty::before {
+    content:"";
+    position:absolute;
+    inset:18% 22% 20%;
+    z-index:8;
+    pointer-events:none;
+    opacity:.9;
+    background:
+      radial-gradient(circle at 18% 32%, rgba(105,78,49,.55) 0 2px, transparent 3px),
+      radial-gradient(circle at 76% 24%, rgba(105,78,49,.45) 0 1.8px, transparent 3px),
+      radial-gradient(circle at 64% 68%, rgba(105,78,49,.42) 0 2px, transparent 3px),
+      radial-gradient(circle at 28% 76%, rgba(105,78,49,.35) 0 1.5px, transparent 2.8px);
+    mix-blend-mode:screen;
+    animation: dirtSpecks 3.5s ease-in-out infinite;
+  }
+
+  .pet-home.dirty .pet-speech {
+    border-left-color: var(--warning);
+  }
+
+  .pet-home.dirty .pet-room {
+    background:
+      linear-gradient(180deg, rgba(244,201,122,.025), transparent 42%),
+      linear-gradient(180deg, transparent 0 72%, rgba(244,201,122,.028) 72% 72.8%, transparent 72.8%),
+      linear-gradient(90deg, rgba(255,255,255,.008) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,.008) 1px, transparent 1px);
+  }
+
+  .pet-habitat-status {
+    position:absolute;
+    left:50%;
+    bottom:12px;
+    z-index:5;
+    transform:translateX(-50%);
+    padding:6px 10px;
+    border:1px solid rgba(var(--accent-rgb),.14);
+    border-radius:999px;
+    background:rgba(4,9,15,.78);
+    color:var(--muted);
+    font:9px/1 var(--mono);
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    white-space:nowrap;
+    pointer-events:none;
+  }
+
+  .pet-home.messy .pet-room {
+    background:
+      linear-gradient(180deg, rgba(244,201,122,.012), transparent 42%),
+      linear-gradient(180deg, transparent 0 72%, rgba(244,201,122,.018) 72% 72.8%, transparent 72.8%),
+      linear-gradient(90deg, rgba(255,255,255,.008) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,.008) 1px, transparent 1px);
+  }
+
+  .pet-home.dirty .pet-habitat-status {
+    color:var(--warning);
+    border-color:rgba(244,201,122,.24);
+  }
+
+  .pet-home.messy .pet-habitat-status {
+    color:#d5c7a8;
+  }
+
+  .pet-bath-btn { color:var(--warning); }
+  .pet-bath-btn:hover:not(:disabled) {
+    border-color:rgba(244,201,122,.34);
+    background:rgba(244,201,122,.06);
+    box-shadow:0 0 18px rgba(244,201,122,.08);
+  }
+  .pet-bath-btn:disabled { opacity:.38; cursor:not-allowed; }
+
+  @keyframes dirtSpecks { 0%,100%{opacity:.55;transform:translateY(0)} 50%{opacity:.92;transform:translateY(1px)} }
+
   .pet-stats {
     display: grid;
     gap: 8px;
@@ -554,7 +755,7 @@ button{color:inherit;border:0}
 
   .pet-controls {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 6px;
     padding: 0 clamp(24px, 6vw, 96px) 24px;
   }
@@ -673,11 +874,33 @@ button{color:inherit;border:0}
 .pet-modal-input{width:100%;margin-top:8px;padding:10px 12px;color:var(--text);background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:9px;outline:none}
 .pet-modal-input:focus{border-color:var(--border-strong);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.07)}
 .pet-modal-note{margin-top:10px;color:var(--muted-2);font:9px/1.5 var(--mono)}
-.danger-btn{color:var(--danger);border-color:rgba(255,126,150,.25);background:rgba(255,126,150,.05)}.pet-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.danger-btn{border:1px solid rgba(255,126,150,.25);border-radius:9px;padding:10px 13px;color:var(--danger);background:rgba(255,126,150,.05);font:11px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:.18s ease}.danger-btn:hover{border-color:rgba(255,126,150,.48);background:rgba(255,126,150,.09);box-shadow:0 0 18px rgba(255,126,150,.08);transform:translateY(-1px)}.pet-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+
+.pet-gallery-backdrop{position:fixed;inset:0;z-index:125;display:none;place-items:center;padding:18px;background:rgba(0,2,6,.74);backdrop-filter:blur(10px)}
+.pet-gallery-backdrop.open{display:grid}
+.pet-gallery-modal{width:min(980px,100%);max-height:min(88vh,920px);overflow:auto;padding:22px;background:rgba(8,13,22,.98);border:1px solid var(--border-strong);border-radius:16px;box-shadow:0 30px 100px rgba(0,0,0,.62),0 0 50px rgba(var(--accent-rgb),.05)}
+.pet-gallery-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.pet-gallery-title{margin:0;font:600 13px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.pet-gallery-subtitle{margin-top:7px;color:var(--muted);font:10px/1.5 var(--mono);letter-spacing:.04em}
+.pet-gallery-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:18px}
+.pet-gallery-card{min-width:0;padding:15px;border:1px solid rgba(120,180,255,.12);border-radius:12px;background:linear-gradient(145deg,rgba(255,255,255,.03),transparent 46%),rgba(var(--primary-rgb),.54);box-shadow:inset 0 1px 0 rgba(255,255,255,.035)}
+.pet-gallery-card-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pet-gallery-name{font:700 12px/1 var(--mono);letter-spacing:.08em}
+.pet-gallery-life{color:var(--muted);font:9px/1 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.pet-gallery-stages{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin-top:12px}
+.pet-gallery-stage{text-align:center;min-width:0;padding:8px 5px;border:1px solid rgba(120,180,255,.08);border-radius:9px;background:rgba(255,255,255,.018)}
+.pet-gallery-stage.evolved{border-color:rgba(var(--accent-rgb),.16);background:rgba(var(--accent-rgb),.025)}
+.pet-gallery-avatar{height:92px;display:grid;place-items:center;color:var(--pet-main);--pet-color:var(--pet-main);filter:drop-shadow(0 7px 12px rgba(0,0,0,.2))}
+.pet-gallery-avatar svg{width:86px;height:86px;overflow:visible}
+.pet-gallery-label{margin-top:4px;color:var(--muted);font:8px/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+.pet-gallery-meta{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:12px}
+.pet-gallery-meta-item{padding:8px;border-top:1px solid rgba(120,180,255,.08);color:var(--muted);font:8px/1.35 var(--mono);letter-spacing:.05em;text-transform:uppercase}
+.pet-gallery-meta-item strong{display:block;margin-top:3px;color:var(--text);font-size:9px}
+@media (max-width:760px){.pet-gallery-modal{padding:16px}.pet-gallery-grid{grid-template-columns:1fr}.pet-gallery-stages{gap:5px}.pet-gallery-avatar{height:82px}.pet-gallery-avatar svg{width:76px;height:76px}}
 .toast-stack{position:fixed;right:18px;bottom:18px;z-index:200;display:grid;gap:8px;width:min(360px,calc(100vw - 36px))}
 .toast{background:rgba(8,14,22,.96);border:1px solid var(--border-strong);border-left:3px solid var(--accent);border-radius:9px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.35);font:11px/1.45 var(--mono);animation:toastIn .22s ease both}
 @keyframes toastIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
-@media (max-width:760px){.pet-home-head,.pet-room,.pet-speech,.pet-profile{margin-inline:16px}.pet-stats{padding-inline:16px}.pet-controls{padding-inline:16px;padding-bottom:16px}.pet-home-head{padding-top:18px}.pet-home-kicker{font-size:11px}.pet-home-title{font-size:15px}.pet-room{min-height:0}.pet-character{width:88px;height:88px}}
+@media (max-width:760px){.pet-home-head,.pet-room,.pet-speech,.pet-profile{margin-inline:16px}.pet-stats{padding-inline:16px}.pet-controls{grid-template-columns:repeat(2,1fr);padding-inline:16px;padding-bottom:16px}.pet-home-head{padding-top:18px}.pet-home-kicker{font-size:11px}.pet-home-title{font-size:15px}.pet-room{min-height:0}.pet-character{width:88px;height:88px}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.pet-character svg,.pet-egg svg{animation:none!important}}
 
 </style>
@@ -701,6 +924,11 @@ button{color:inherit;border:0}
             <path d="M4 20l4.2-1 10.4-10.4a2 2 0 00-2.8-2.8L5.4 16.2 4 20zM14.8 6.8l2.8 2.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
         </button>
+        <button id="petGalleryBtn" class="icon-btn pet-head-btn" type="button" title="View companions" aria-label="View companions">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 5h6v6H4zM14 5h6v6h-6zM4 15h6v4H4zM14 15h6v4h-6z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+          </svg>
+        </button>
         <button id="petInstallBtn" class="icon-btn pet-head-btn pet-install-btn" type="button" title="Install Companion" aria-label="Install Companion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 </div>
     </div>
@@ -710,6 +938,8 @@ button{color:inherit;border:0}
         <span></span><span></span><span></span>
       </div>
       <div class="pet-room-label" aria-hidden="true">HOME NODE // 01</div>
+      <div id="petSleepIndicator" class="pet-sleep-indicator" aria-live="polite">RESTING</div>
+      <div id="petHabitatStatus" class="pet-habitat-status" aria-live="polite">HABITAT // CLEAN 100%</div>
       <div class="pet-bowl" aria-hidden="true"><span></span></div>
       <div class="pet-toy" aria-hidden="true"></div>
       <div class="pet-bed" aria-hidden="true"></div>
@@ -736,6 +966,7 @@ button{color:inherit;border:0}
       <div><span>LIKES</span><strong id="petLikesLabel">INCUBATING</strong></div>
       <div><span>TRAIT</span><strong id="petTraitLabel">UNKNOWN</strong></div>
       <div><span>LIFE</span><strong id="petLifeLabel">INCUBATING</strong></div>
+      <div><span>HOME</span><strong id="petHabitatLabel">CLEAN 100%</strong></div>
     </div>
 
     <div id="petIncubation" class="pet-incubation" aria-label="Egg incubation progress">
@@ -759,6 +990,10 @@ button{color:inherit;border:0}
         <div class="pet-stat-line"><span>ENERGY</span><strong id="petEnergyValue">86%</strong></div>
         <div class="pet-stat-track"><div id="petEnergyFill" class="pet-stat-fill"></div></div>
       </div>
+      <div class="pet-stat">
+        <div class="pet-stat-line"><span>CLEANLINESS</span><strong id="petCleanlinessValue">100%</strong></div>
+        <div class="pet-stat-track"><div id="petCleanlinessFill" class="pet-stat-fill"></div></div>
+      </div>
     </div>
 
     <div class="pet-controls">
@@ -770,6 +1005,9 @@ button{color:inherit;border:0}
       </button>
       <button id="petPetBtn" class="tiny-btn pet-action-btn" type="button">
         <span aria-hidden="true">♡</span> Pet
+      </button>
+      <button id="petBathBtn" class="tiny-btn pet-action-btn pet-bath-btn" type="button">
+        <span aria-hidden="true">≋</span> Bath
       </button>
     </div>
   </div>
@@ -793,6 +1031,19 @@ button{color:inherit;border:0}
   </section>
 </div>
 
+<div id="petGalleryBackdrop" class="pet-gallery-backdrop" aria-hidden="true">
+  <section class="pet-gallery-modal" role="dialog" aria-modal="true" aria-labelledby="petGalleryTitle">
+    <div class="pet-gallery-head">
+      <div>
+        <h2 id="petGalleryTitle" class="pet-gallery-title">Companion Species</h2>
+        <div class="pet-gallery-subtitle">Distinct species, growth stages, and evolved forms.</div>
+      </div>
+      <button id="petGalleryClose" class="icon-btn pet-head-btn" type="button" aria-label="Close companion gallery">×</button>
+    </div>
+    <div id="petGalleryGrid" class="pet-gallery-grid"></div>
+  </section>
+</div>
+
 <div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
 <script>
 
@@ -812,6 +1063,8 @@ button{color:inherit;border:0}
       fullness: 100,
       happiness: 100,
       energy: 100,
+      cleanliness: 100,
+      habitatCleanliness: 100,
       lastUpdated: Date.now(),
       interactions: 0,
       lifespanDays: null,
@@ -825,11 +1078,11 @@ button{color:inherit;border:0}
   };
 
   const PET_SPECIES = {
-    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", lifespanDays:24, hatchMinutes:4, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
-    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", lifespanDays:30, hatchMinutes:7, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
-    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", lifespanDays:21, hatchMinutes:5, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
-    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", lifespanDays:18, hatchMinutes:3, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
-    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", lifespanDays:27, hatchMinutes:6, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
+    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", glow:"rgba(115,230,255,.22)", lifespanDays:24, hatchMinutes:4, evolvedLabel:"LUMA FOX // AURORA", evolutionTrait:"ECHO STEP // HIGH ENERGY", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
+    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", glow:"rgba(131,230,174,.20)", lifespanDays:30, hatchMinutes:7, evolvedLabel:"MOSSLING // ANCIENT BLOOM", evolutionTrait:"ROOTED CALM // SLOW NEED DECAY", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
+    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", glow:"rgba(169,160,255,.22)", lifespanDays:21, hatchMinutes:5, evolvedLabel:"BYTE CAT // QUANTUM", evolutionTrait:"RAPID LEARNING // PET BONUS", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
+    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", glow:"rgba(255,210,118,.22)", lifespanDays:18, hatchMinutes:3, evolvedLabel:"SPARK BOT // OVERCLOCK", evolutionTrait:"OVERCHARGE // FAST RECOVERY", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
+    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", glow:"rgba(244,167,223,.22)", lifespanDays:27, hatchMinutes:6, evolvedLabel:"MOON BUN // DREAMER", evolutionTrait:"SOFT GLOW // DEEP REST", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
   };
 
   const $ = (selector, root=document) => root.querySelector(selector);
@@ -880,6 +1133,8 @@ button{color:inherit;border:0}
         merged.pet.hatchAt = Number(merged.pet.createdAt || Date.now()) + Number(profile.hatchMinutes || 10) * 60000;
       }
     }
+    merged.pet.cleanliness = Number.isFinite(Number(merged.pet.cleanliness)) ? clamp(Number(merged.pet.cleanliness),0,100) : 100;
+    merged.pet.habitatCleanliness = Number.isFinite(Number(merged.pet.habitatCleanliness)) ? clamp(Number(merged.pet.habitatCleanliness),0,100) : 100;
     if (merged.pet.stage === "hatched") {
       const profile = PET_SPECIES[merged.pet.species] || PET_SPECIES.lumafox;
       merged.pet.lifespanDays = Number(merged.pet.lifespanDays) || profile.lifespanDays;
@@ -930,6 +1185,8 @@ button{color:inherit;border:0}
     state.pet.fullness = 100;
     state.pet.happiness = 100;
     state.pet.energy = 100;
+    state.pet.cleanliness = 100;
+    state.pet.habitatCleanliness = clampPetValue(state.pet.habitatCleanliness ?? 100);
     state.pet.lastUpdated = now;
     state.pet.lifespanDays = null;
     state.pet.ageMs = 0;
@@ -1000,6 +1257,8 @@ button{color:inherit;border:0}
     state.pet.fullness = 88;
     state.pet.happiness = 92;
     state.pet.energy = 90;
+    state.pet.cleanliness = 100;
+    state.pet.habitatCleanliness = clampPetValue(state.pet.habitatCleanliness ?? 100);
     state.pet.lastUpdated = now;
     state.pet.interactions = 0;
     state.pet.lifespanDays = profile.lifespanDays;
@@ -1044,6 +1303,9 @@ button{color:inherit;border:0}
       state.pet.happiness=clampPetValue(state.pet.happiness-elapsedHours*1.35*profile.socialRate);
       const baseRecovery=state.pet.fullness<20?1.2:3.1;
       state.pet.energy=clampPetValue(state.pet.energy+elapsedHours*baseRecovery*profile.recoveryRate);
+      state.pet.cleanliness=clampPetValue((state.pet.cleanliness ?? 100)-elapsedHours*1.55);
+      state.pet.habitatCleanliness=clampPetValue((state.pet.habitatCleanliness ?? 100)-elapsedHours*0.72);
+      if(state.pet.cleanliness < 45) state.pet.habitatCleanliness=clampPetValue(state.pet.habitatCleanliness-elapsedHours*0.45);
     }
     state.pet.lastUpdated=now;
     if(state.pet.ageMs>=Number(state.pet.lifespanDays)*86400000){handlePetDeath(now);return;}
@@ -1052,9 +1314,11 @@ button{color:inherit;border:0}
   }
 
   function getPetMood() {
-    const fullness=clampPetValue(state.pet.fullness), happiness=clampPetValue(state.pet.happiness), energy=clampPetValue(state.pet.energy);
-    const average=(fullness+happiness+energy)/3;
-    if (energy < 22) return { key:"sleepy", label:"SLEEPY", message:"Low power... cozy mode." };
+    const fullness=clampPetValue(state.pet.fullness), happiness=clampPetValue(state.pet.happiness), energy=clampPetValue(state.pet.energy), cleanliness=clampPetValue(state.pet.cleanliness);
+    const average=(fullness+happiness+energy+cleanliness)/4;
+    if (energy < 12) return { key:"sleeping", label:"SLEEPING", message:"Deep recharge mode. Quiet hours." };
+    if (energy < 22) return { key:"resting", label:"RESTING", message:"Taking a quiet recharge break." };
+    if (cleanliness < 22) return { key:"dirty", label:"DIRTY", message:"Bath protocol requested. I need a clean-up." };
     if (fullness < 24) return { key:"hungry", label:"HUNGRY", message:"Food protocol requested." };
     if (happiness < 28) return { key:"lonely", label:"LONELY", message:"Could use some attention." };
     if (average >= 88) return { key:"ecstatic", label:"THRIVING", message:"Maximum tiny-creature energy." };
@@ -1064,7 +1328,7 @@ button{color:inherit;border:0}
 
   function petMouthPath(moodKey) {
     if (moodKey === "ecstatic" || moodKey === "happy") return "M39 59q9 8 18 0";
-    if (moodKey === "sleepy") return "M41 61q7 2 14 0";
+    if (moodKey === "resting" || moodKey === "sleeping" || moodKey === "sleepy") return "M41 61q7 2 14 0";
     if (moodKey === "hungry" || moodKey === "lonely") return "M40 64q8-7 16 0";
     return "M40 61q8 3 16 0";
   }
@@ -1073,7 +1337,8 @@ button{color:inherit;border:0}
     clearTimeout(walkTimeout);
     clearInterval(walkTimer);
     walkTimeout = setTimeout(() => {
-      if (state.pet.stage !== "hatched" || document.hidden) {
+      const currentMood = getPetMood();
+      if (state.pet.stage !== "hatched" || document.hidden || currentMood.key === "resting" || currentMood.key === "sleeping") {
         schedulePetWalk(1600);
         return;
       }
@@ -1168,6 +1433,7 @@ button{color:inherit;border:0}
     const name=String(state.pet.name||defaults.pet.name).trim().slice(0,18)||defaults.pet.name;
     const profile=getPetSpeciesProfile();
     home.classList.toggle("egg-stage",isEgg); home.classList.toggle("dead-stage",isDead); home.classList.toggle("evolved",Number(state.pet.evolution||0)>0&&!isDead);
+    home.classList.remove("resting","sleeping","messy","dirty");
     home.style.setProperty("--pet-color",profile?.color||"var(--accent)");
     $("#petName").textContent=name.toUpperCase();
     [$("#petFeedBtn"),$("#petPlayBtn"),$("#petPetBtn")].forEach(btn=>{if(btn)btn.disabled=isEgg||isDead;});
@@ -1178,6 +1444,7 @@ button{color:inherit;border:0}
       const eggProfile=PET_SPECIES[state.pet.eggSpecies]||PET_SPECIES.lumafox;
       $("#petMoodBadge").textContent="INCUBATING"; $("#petSpeciesLabel").textContent=`${eggProfile.label} EGG`; $("#petLikesLabel").textContent=eggProfile.likes; $("#petTraitLabel").textContent=`${eggProfile.hatchMinutes} MIN INCUBATION`; $("#petLifeLabel").textContent=`HATCH IN ${formatPetHatchTime(remaining)}`;
       $("#petHatchCountdown").textContent=formatPetHatchTime(remaining); $("#petIncubationFill").style.width=`${progress}%`;
+      $("#petHabitatLabel").textContent=`CLEAN ${Math.round(clampPetValue(state.pet.habitatCleanliness))}%`; $("#petHabitatStatus").textContent=`HABITAT // CLEAN ${Math.round(clampPetValue(state.pet.habitatCleanliness))}%`;
       if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=`Egg stable. Hatching in ${formatPetHatchTime(remaining)}.`; return;
     }
     $("#petIncubationFill").style.width="0%";
@@ -1185,22 +1452,48 @@ button{color:inherit;border:0}
       stopPetWalk(); character.className=`pet-character life-elder sleepy species-${state.pet.species||"lumafox"}`; character.style.left="50%"; character.style.bottom="30px";
       $("#petMoodBadge").textContent="RESTING"; $("#petSpeciesLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolvedLabel:profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolutionTrait:profile.trait;
       $("#petLifeLabel").textContent=`LIVED ${Math.round(Number(state.pet.lifespanDays||profile.lifespanDays))} DAYS`;
+      $("#petHabitatLabel").textContent=`${clampPetValue(state.pet.habitatCleanliness) >= 70 ? "CLEAN" : "MESSY"} ${Math.round(clampPetValue(state.pet.habitatCleanliness))}%`; $("#petHabitatStatus").textContent=`HABITAT // ${Math.round(clampPetValue(state.pet.habitatCleanliness))}%`;
+      const deadBath=$("#petBathBtn"); if(deadBath) deadBath.disabled=true;
       if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=`${name} is resting. Life complete.`; return;
     }
     state.pet.fullness=clampPetValue(state.pet.fullness); state.pet.happiness=clampPetValue(state.pet.happiness); state.pet.energy=clampPetValue(state.pet.energy);
     const mood=getPetMood(),lifeStage=getLifeStage(),wasWalking=character.classList.contains("walking");
+    const dirty=clampPetValue(state.pet.cleanliness) < 45;
+    home.classList.toggle("dirty",dirty);
     const speciesKey=state.pet.species||"lumafox";
     const evolved=Number(state.pet.evolution||0)>0;
-    character.className=`pet-character ${mood.key} species-${speciesKey} life-${lifeStage.key}`;
-    if(wasWalking)character.classList.add("walking");
+    const isResting=mood.key==="resting" || mood.key==="sleeping";
+    if (isResting) {
+      stopPetWalk();
+      home.classList.add(mood.key);
+      character.style.left = "50%";
+      character.style.bottom = "28px";
+    }
+    character.className=`pet-character ${mood.key} species-${speciesKey} life-${lifeStage.key}${dirty ? " dirty" : ""}`;
+    if(wasWalking && !isResting)character.classList.add("walking");
+    if (isResting) {
+      character.classList.remove("walking");
+    }
     renderPetAppearance(character, speciesKey, lifeStage.key, evolved, mood.key);
-    $("#petMoodBadge").textContent=mood.label; $("#petSpeciesLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolvedLabel:profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolutionTrait:profile.trait;
+    $("#petMoodBadge").textContent=mood.label;
+    const sleepIndicator=$("#petSleepIndicator");
+    if (sleepIndicator) {
+      sleepIndicator.textContent = mood.key === "sleeping" ? "SLEEPING // RECHARGE" : mood.key === "resting" ? "RESTING // RECHARGE" : "";
+    }
+    $("#petSpeciesLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolvedLabel:profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=Number(state.pet.evolution||0)>0?profile.evolutionTrait:profile.trait;
     const ageDays=Math.floor(Number(state.pet.ageMs||0)/86400000),remainingDays=Math.max(0,Math.ceil(Number(state.pet.lifespanDays||profile.lifespanDays)-Number(state.pet.ageMs||0)/86400000));
     $("#petLifeLabel").textContent=`${lifeStage.label} // ${ageDays}D // ${remainingDays}D LEFT`;
-    [["petFullness",state.pet.fullness],["petHappiness",state.pet.happiness],["petEnergy",state.pet.energy]].forEach(([prefix,value])=>{const rounded=Math.round(value),v=$(`#${prefix}Value`),f=$(`#${prefix}Fill`);if(v)v.textContent=`${rounded}%`;if(f)f.style.width=`${value}%`;});
+    const cleanliness=clampPetValue(state.pet.cleanliness), habitatCleanliness=clampPetValue(state.pet.habitatCleanliness);
+    const homeState=habitatCleanliness >= 70 ? "clean" : habitatCleanliness >= 40 ? "messy" : "dirty";
+    home.classList.toggle("dirty",homeState==="dirty");
+    home.classList.toggle("messy",homeState==="messy");
+    $("#petHabitatLabel").textContent=`${homeState.toUpperCase()} ${Math.round(habitatCleanliness)}%`;
+    $("#petHabitatStatus").textContent=`HABITAT // ${homeState.toUpperCase()} ${Math.round(habitatCleanliness)}%`;
+    [["petFullness",state.pet.fullness],["petHappiness",state.pet.happiness],["petEnergy",state.pet.energy],["petCleanliness",cleanliness]].forEach(([prefix,value])=>{const rounded=Math.round(value),v=$(`#${prefix}Value`),f=$(`#${prefix}Fill`);if(v)v.textContent=`${rounded}%`;if(f)f.style.width=`${value}%`;});
+    const bathBtn=$("#petBathBtn"); if(bathBtn) bathBtn.disabled=isEgg||isDead||cleanliness>=95;
     const mouth=$("#petMouth"); if(mouth)mouth.setAttribute("d",petMouthPath(mood.key));
     if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=mood.message;
-    if(!walkTimeout&&!document.hidden)schedulePetWalk(1000+Math.random()*1600);
+    if(!isResting && !walkTimeout&&!document.hidden)schedulePetWalk(1000+Math.random()*1600);
   }
 
   function petSpeak(message,duration=2800){ const speech=$("#petSpeech"); if(speech)speech.textContent=message; petMessageUntil=Date.now()+duration; }
@@ -1221,6 +1514,26 @@ button{color:inherit;border:0}
     updatePetDecay(); if(state.pet.stage==="egg"){inspectPetEgg();return;}
     const profile=getPetSpeciesProfile(); state.pet.happiness=clampPetValue(state.pet.happiness+12*profile.petAffinity); state.pet.energy=clampPetValue(state.pet.energy+2); commitPetInteraction(profile.petMessage);
   }
+  function bathePet(){
+    updatePetDecay();
+    if(state.pet.stage === "egg"){ inspectPetEgg(); return; }
+    if(state.pet.stage === "dead"){ petSpeak("This life cycle is complete."); return; }
+    const cleanliness=clampPetValue(state.pet.cleanliness);
+    if(cleanliness >= 95){
+      petSpeak("Already clean. No bath needed.");
+      petReact();
+      return;
+    }
+    state.pet.cleanliness=100;
+    state.pet.habitatCleanliness=clampPetValue((state.pet.habitatCleanliness ?? 100)+10);
+    state.pet.happiness=clampPetValue(state.pet.happiness+4);
+    state.pet.lastUpdated=Date.now();
+    saveState();
+    renderPet();
+    petSpeak("Bath complete. Fresh coat, cleaner habitat.",4200);
+    petReact();
+  }
+
   function beginNewLife(){
     if(state.pet.stage!=="dead")return;
     const now=Date.now();
@@ -1235,6 +1548,41 @@ button{color:inherit;border:0}
   }
 
   function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#039;"}[ch]));}
+
+  function openPetGallery(){
+    const backdrop=$("#petGalleryBackdrop"), grid=$("#petGalleryGrid");
+    if(!backdrop||!grid)return;
+    const stages=[
+      {key:"baby",label:"BABY",evolved:false},
+      {key:"juvenile",label:"JUVENILE",evolved:false},
+      {key:"adult",label:"ADULT",evolved:true},
+      {key:"elder",label:"ELDER",evolved:true}
+    ];
+    grid.innerHTML=Object.entries(PET_SPECIES).map(([key,profile])=>{
+      const stageCards=stages.map(stage=>{
+        const svg=petAppearanceSvg(key,stage.key,stage.evolved,"happy").replace('id="petCharacterSvg"','');
+        return `<div class="pet-gallery-stage${stage.evolved?" evolved":""}">
+          <div class="pet-gallery-avatar" style="--pet-main:${profile.color};--pet-secondary:${profile.color};--pet-glow:${profile.glow||"transparent"}">${svg}</div>
+          <div class="pet-gallery-label">${stage.label}${stage.evolved?" // EVOLVED":""}</div>
+        </div>`;
+      }).join("");
+      return `<article class="pet-gallery-card">
+        <div class="pet-gallery-card-head"><div class="pet-gallery-name" style="color:${profile.color}">${profile.label}</div><div class="pet-gallery-life">${profile.lifespanDays} DAY LIFE // ${profile.hatchMinutes} MIN HATCH</div></div>
+        <div class="pet-gallery-stages">${stageCards}</div>
+        <div class="pet-gallery-meta">
+          <div class="pet-gallery-meta-item">Likes<strong>${escapeHtml(profile.likes)}</strong></div>
+          <div class="pet-gallery-meta-item">Evolution<strong>${escapeHtml(profile.evolvedLabel.replace(profile.label+" // ",""))}</strong></div>
+        </div>
+      </article>`;
+    }).join("");
+    backdrop.classList.add("open"); backdrop.setAttribute("aria-hidden","false");
+    setTimeout(()=>$("#petGalleryClose")?.focus(),0);
+  }
+  function closePetGallery(){
+    const backdrop=$("#petGalleryBackdrop");
+    if(!backdrop)return;
+    backdrop.classList.remove("open"); backdrop.setAttribute("aria-hidden","true");
+  }
 
   function openRenameModal(){
     const modal=$("#petModalBackdrop");
@@ -1290,11 +1638,13 @@ button{color:inherit;border:0}
   }
 
   function bindEvents(){
-    $("#petFeedBtn").addEventListener("click",feedPet); $("#petPlayBtn").addEventListener("click",playWithPet); $("#petPetBtn").addEventListener("click",petCompanion); $("#petCharacter").addEventListener("click",()=>state.pet.stage==="dead"?beginNewLife():petCompanion()); $("#petEggBtn").addEventListener("click",inspectPetEgg);
-    $("#petRenameBtn").addEventListener("click",openRenameModal); $("#petInstallBtn").addEventListener("click",promptPwaInstall);
+    $("#petFeedBtn").addEventListener("click",feedPet); $("#petPlayBtn").addEventListener("click",playWithPet); $("#petPetBtn").addEventListener("click",petCompanion); $("#petBathBtn").addEventListener("click",bathePet); $("#petCharacter").addEventListener("click",()=>state.pet.stage==="dead"?beginNewLife():petCompanion()); $("#petEggBtn").addEventListener("click",inspectPetEgg);
+    $("#petRenameBtn").addEventListener("click",openRenameModal); $("#petGalleryBtn").addEventListener("click",openPetGallery); $("#petInstallBtn").addEventListener("click",promptPwaInstall);
+    $("#petModalCancelTop").addEventListener("click",closeRenameModal);
     $("#petModalCancel").addEventListener("click",closeRenameModal); $("#petModalSave").addEventListener("click",saveRename); $("#petModalReset").addEventListener("click",resetCompanion);
     $("#petModalBackdrop").addEventListener("mousedown",e=>{if(e.target===e.currentTarget)closeRenameModal();});
-    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRenameModal();});
+    $("#petGalleryClose").addEventListener("click",closePetGallery); $("#petGalleryBackdrop").addEventListener("mousedown",e=>{if(e.target===e.currentTarget)closePetGallery();});
+    document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if($("#petGalleryBackdrop")?.classList.contains("open"))closePetGallery();else closeRenameModal();});
     document.addEventListener("visibilitychange",()=>{if(!document.hidden){updatePetDecay();renderPet();saveState();}});
     window.addEventListener("pagehide",()=>{updatePetDecay();saveState();});
   }
