@@ -814,6 +814,7 @@ button{color:inherit;border:0}
       lifeStage: "egg",
       evolution: 0,
       evolvedAt: null,
+      previousSpecies: null,
     },
     prefs: { accent: "#59d9ff", primary: "#0c121c" }
   };
@@ -936,8 +937,12 @@ button{color:inherit;border:0}
   function hatchPet(now=Date.now()) {
     if (state.pet.stage !== "egg") return false;
     const keys = Object.keys(PET_SPECIES);
-    const species = keys[Math.floor(Math.random() * keys.length)];
+    const previousSpecies = state.pet.previousSpecies || null;
+    const availableKeys = keys.length > 1 ? keys.filter(key => key !== previousSpecies) : keys;
+    const species = availableKeys[Math.floor(Math.random() * availableKeys.length)];
+    const profile = PET_SPECIES[species];
     state.pet.stage = "hatched";
+    state.pet.previousSpecies = species;
     state.pet.species = species;
     state.pet.fullness = 88;
     state.pet.happiness = 92;
@@ -950,7 +955,6 @@ button{color:inherit;border:0}
     state.pet.evolution = 0;
     state.pet.evolvedAt = null;
     saveState();
-    const profile = PET_SPECIES[species];
     petSpeak(`Shell opened. ${profile.label} detected!`, 6000);
     petReact();
     showToast(`${profile.label} HATCHED`);
@@ -1100,7 +1104,7 @@ button{color:inherit;border:0}
   function beginNewLife(){
     if(state.pet.stage!=="dead")return;
     const now=Date.now();
-    state.pet.stage="egg"; state.pet.species=null; state.pet.createdAt=now; state.pet.hatchAt=now+PET_HATCH_MS;
+    state.pet.stage="egg"; state.pet.previousSpecies=state.pet.species||state.pet.previousSpecies||null; state.pet.species=null; state.pet.createdAt=now; state.pet.hatchAt=now+PET_HATCH_MS;
     state.pet.fullness=100; state.pet.happiness=100; state.pet.energy=100; state.pet.lastUpdated=now;
     state.pet.lifespanDays=null; state.pet.ageMs=0; state.pet.lifeStage="egg"; state.pet.evolution=0; state.pet.evolvedAt=null; state.pet.interactions=0;
     saveState(); renderPet(); petSpeak("A new life cycle is beginning.",5000); petReact(); showToast("NEW COMPANION CYCLE STARTED");
