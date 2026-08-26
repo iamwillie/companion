@@ -1,28 +1,36 @@
 # Companion
 
-A standalone Tamagotchi-style virtual companion.
+A standalone Tamagotchi-style virtual companion built with pure HTML, CSS, and JavaScript.
 
-Companion runs entirely in the browser with no frameworks or backend required. Your pet hatches, develops its own species and traits, moves around its habitat, and reacts to how you care for it.
+Hatch a pet, care for its needs, watch it explore its habitat, and see it grow and evolve throughout its life.
 
 ## Features
 
 * Egg incubation and hatching
-* Multiple companion species
-* Autonomous movement around the habitat
+* Baby → Juvenile → Adult → Elder lifecycle
+* Species-specific evolution and lifespan
+* Autonomous movement
 * Feed, play, and pet interactions
 * Fullness, happiness, and energy stats
-* Dynamic moods and reactions
 * Persistent progress using `localStorage`
-* Responsive full-screen interface
 * Installable as a PWA
-* Pure HTML, CSS, and JavaScript
+
+## Pets
+
+| Pet           | Lifespan | Likes                     | Main Trait                             |
+| ------------- | -------: | ------------------------- | -------------------------------------- |
+| **Luma Fox**  |  24 days | Chase games, night lights | Stronger play, slower loneliness       |
+| **Mossling**  |  30 days | Snacks, quiet corners     | Better feeding, slower hunger          |
+| **Byte Cat**  |  22 days | Head pats, puzzles        | Stronger affection and play            |
+| **Spark Bot** |  18 days | Games, recharging         | Stronger play and energy recovery      |
+| **Moon Bun**  |  27 days | Affection, naps           | Stronger affection and energy recovery |
+
+Each pet evolves when it reaches adulthood and eventually progresses into its elder stage.
 
 ## Running
 
-Open `index.html` directly in a browser.
+Open `glance-companion.html` in a modern browser. No dependencies, frameworks, accounts, or backend are required.
 
-For PWA installation, serve it over **HTTPS** or **localhost**, then use the **Install App** button or your browser's install option.
+For PWA installation, serve the app over **HTTPS** or **localhost**.
 
-## Data
-
-All companion state is stored locally in your browser using `localStorage`. No account, server, or external database is required.
+All companion data is stored locally in the browser using `localStorage`.
