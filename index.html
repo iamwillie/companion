@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#05070b" />
+<meta name="application-name" content="COMPANION // HABITAT" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="COMPANION" />
+<title>COMPANION // HABITAT</title>
+<style>
+
+:root {
+  --bg:#05070b; --bg-2:#08101a; --primary:#0c121c; --primary-rgb:12,18,28;
+  --panel:rgba(var(--primary-rgb),.76); --border:rgba(120,180,255,.18); --border-strong:rgba(89,217,255,.34);
+  --accent:#59d9ff; --accent-rgb:89,217,255; --accent-2:#8c7cff; --text:#edf7ff; --muted:#7f93a8;
+  --muted-2:#516274; --success:#6de7b7; --warning:#f4c97a; --danger:#ff7e96; --radius:14px; --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  --sans:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{min-height:100%;margin:0;background:var(--bg)}
+body{position:relative;min-height:100vh;overflow:hidden;color:var(--text);font-family:var(--sans);background:radial-gradient(circle at 12% 8%,rgba(var(--accent-rgb),.13),transparent 30rem),radial-gradient(circle at 86% 18%,rgba(140,124,255,.10),transparent 34rem),linear-gradient(180deg,#05070b 0%,#07101a 48%,#05070b 100%)}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background-image:linear-gradient(rgba(var(--accent-rgb),.028) 1px,transparent 1px),linear-gradient(90deg,rgba(var(--accent-rgb),.028) 1px,transparent 1px),linear-gradient(rgba(255,255,255,.007) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.007) 1px,transparent 1px);background-size:46px 46px,46px 46px,230px 230px,230px 230px;opacity:.68;mask-image:linear-gradient(to bottom,rgba(0,0,0,.96),rgba(0,0,0,.28))}
+body::after{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 14% 16%,rgba(var(--accent-rgb),.13),transparent 26rem),radial-gradient(circle at 84% 20%,rgba(140,124,255,.095),transparent 31rem),radial-gradient(circle at 52% 86%,rgba(var(--accent-rgb),.055),transparent 36rem);opacity:.8}
+button,input{font:inherit;color:inherit}
+button{color:inherit;border:0}
+:focus-visible{outline:2px solid rgba(var(--accent-rgb),.8);outline-offset:3px}
+.app-stage{position:relative;z-index:2;width:100vw;height:100dvh;min-height:100vh;overflow:hidden}
+.app-brand{display:none;position:fixed;left:18px;top:18px;z-index:5;font:10px/1.3 var(--mono);letter-spacing:.16em;text-transform:uppercase;color:var(--muted);user-select:none}
+.app-brand strong{display:block;color:var(--accent);font-size:11px;margin-top:4px}
+
+
+.text-btn,.tiny-btn,.icon-btn{border:1px solid var(--border);background:rgba(255,255,255,.025);cursor:pointer;transition:.18s ease}
+.icon-btn{width:38px;height:38px;border-radius:9px;display:grid;place-items:center}
+.icon-btn:hover,.text-btn:hover,.tiny-btn:hover{border-color:var(--border-strong);background:rgba(var(--accent-rgb),.06);box-shadow:0 0 18px rgba(var(--accent-rgb),.075)}
+.text-btn,.tiny-btn{border-radius:9px;padding:10px 13px;font:11px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase}
+.primary-btn{border:1px solid var(--accent);border-radius:9px;padding:10px 13px;color:#061015;background:var(--accent);font:800 11px/1 var(--mono);letter-spacing:.07em;text-transform:uppercase;cursor:pointer}
+.primary-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(var(--accent-rgb),.18)}
+
+
+  .pet-home {
+    position: fixed;
+    inset: 0;
+    z-index: 105;
+    width: 100vw;
+    height: 100dvh;
+    color: var(--text);
+    font-family: var(--sans);
+    transition: width .2s ease, transform .2s ease, opacity .2s ease;
+  }
+
+  .pet-home-frame {
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 0;
+    border-radius: 0;
+    background:
+      linear-gradient(rgba(var(--accent-rgb), .012) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(var(--accent-rgb), .012) 1px, transparent 1px),
+      radial-gradient(110% 80% at 14% -8%, rgba(255,255,255,.07), transparent 50%),
+      linear-gradient(145deg, rgba(var(--primary-rgb), .94), rgba(5,10,17,.96));
+    background-size: 24px 24px, 24px 24px, auto, auto;
+    box-shadow:
+      0 18px 52px rgba(0,0,0,.38),
+      inset 0 1px 0 rgba(255,255,255,.07);
+  }
+
+  .pet-home-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin: 0 clamp(24px, 6vw, 96px);
+    padding: 24px 4px 20px;
+    border-bottom: 1px solid rgba(var(--accent-rgb), .12);
+    user-select: none;
+  }
+
+  .pet-home-kicker {
+    color: var(--muted);
+    font: 13px/1.3 var(--mono);
+    letter-spacing: .16em;
+  }
+
+  .pet-home-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-top: 4px;
+    font: 700 17px/1.15 var(--mono);
+    letter-spacing: .08em;
+  }
+
+  .pet-mood-badge {
+    padding: 4px 6px;
+    border: 1px solid rgba(var(--accent-rgb), .18);
+    border-radius: 999px;
+    color: var(--accent);
+    background: rgba(var(--accent-rgb), .055);
+    font: 11px/1 var(--mono);
+    letter-spacing: .08em;
+  }
+
+  .pet-home-actions {
+    display: inline-flex;
+    gap: 5px;
+  }
+
+  .pet-home-head button {
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .pet-head-btn {
+    width: 30px;
+    height: 30px;
+  }
+
+  .pet-room {
+    position: relative;
+    flex: 1 1 auto;
+    min-height: 0;
+    margin: 0 clamp(24px, 6vw, 96px);
+    height: auto;
+    overflow: hidden;
+    border-bottom: 1px solid rgba(var(--accent-rgb), .10);
+    background:
+      linear-gradient(180deg, rgba(var(--accent-rgb), .035), transparent 42%),
+      linear-gradient(180deg, transparent 0 72%, rgba(var(--accent-rgb), .025) 72% 72.8%, transparent 72.8%),
+      linear-gradient(90deg, rgba(255,255,255,.008) 1px, transparent 1px),
+      linear-gradient(rgba(255,255,255,.008) 1px, transparent 1px);
+    background-size: auto, auto, 26px 26px, 26px 26px;
+  }
+
+  .pet-room::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 46px;
+    background:
+      linear-gradient(90deg, rgba(var(--accent-rgb), .05) 1px, transparent 1px),
+      linear-gradient(rgba(var(--accent-rgb), .04) 1px, transparent 1px),
+      rgba(4, 9, 15, .58);
+    background-size: 20px 20px;
+    transform: perspective(90px) rotateX(34deg) scaleX(1.18);
+    transform-origin: bottom;
+    opacity: .8;
+  }
+
+  .pet-window {
+    position: absolute;
+    top: 15px;
+    left: 14px;
+    width: 64px;
+    height: 42px;
+    border: 1px solid rgba(var(--accent-rgb), .20);
+    border-radius: 8px 2px 8px 2px;
+    background:
+      radial-gradient(circle at 25% 30%, rgba(255,255,255,.75) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 70% 60%, rgba(var(--accent-rgb),.8) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 48% 20%, rgba(140,124,255,.8) 0 1px, transparent 1.5px),
+      linear-gradient(160deg, rgba(var(--accent-rgb),.055), rgba(0,0,0,.2));
+    box-shadow: inset 0 0 18px rgba(var(--accent-rgb), .03);
+  }
+
+  .pet-window::before,
+  .pet-window::after {
+    content: "";
+    position: absolute;
+    background: rgba(var(--accent-rgb), .12);
+  }
+
+  .pet-window::before {
+    width: 1px;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+  }
+
+  .pet-window::after {
+    height: 1px;
+    left: 0;
+    right: 0;
+    top: 50%;
+  }
+
+  .pet-room-label {
+    position: absolute;
+    top: 18px;
+    right: 14px;
+    color: rgba(127,147,168,.62);
+    font: 9px/1 var(--mono);
+    letter-spacing: .11em;
+  }
+
+  .pet-speech {
+    position: relative;
+    z-index: 2;
+    margin: 18px clamp(24px, 6vw, 96px) 12px;
+    min-height: 52px;
+    padding: 13px 16px;
+    border: 1px solid rgba(var(--accent-rgb), .18);
+    border-left: 3px solid var(--pet-color, var(--accent));
+    border-radius: 8px;
+    background: rgba(4, 9, 15, .94);
+    color: #d8e9f5;
+    font: 13px/1.55 var(--mono);
+    letter-spacing: .03em;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+  }
+
+  .pet-character {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 26px;
+    width: 98px;
+    height: 98px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transform: translateX(-50%);
+    transition: left 2.2s ease-in-out, bottom 2.2s ease-in-out, filter .18s ease;
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.24));
+  }
+
+  .pet-character svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    animation: petIdle 3.2s ease-in-out infinite;
+  }
+
+  .pet-character.walking svg {
+    animation: petWalk .48s ease-in-out infinite;
+  }
+
+  .pet-character.walking {
+    will-change: left, bottom, transform;
+  }
+
+  @keyframes petWalk {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-4px) scale(1.012); }
+  }
+
+  @keyframes petIdle {
+    0%, 100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-2px) scale(1.008); }
+  }
+
+  .pet-character:hover {
+    filter: drop-shadow(0 8px 14px rgba(0,0,0,.24)) drop-shadow(0 0 10px rgba(var(--accent-rgb), .14));
+  }
+
+  .pet-character:active svg {
+    transform: translateY(1px) scale(.98);
+  }
+
+  .pet-character.sleepy .pet-eye {
+    transform: scaleY(.18);
+    transform-origin: center;
+  }
+
+  .pet-character.hungry {
+    color: var(--warning);
+  }
+
+  .pet-character.lonely {
+    color: #a7b6c6;
+  }
+
+  .pet-character.sleepy {
+    color: #9e98e8;
+  }
+
+  .pet-character.ecstatic {
+    color: var(--success);
+  }
+
+  .pet-bowl {
+    position: absolute;
+    left: 19px;
+    bottom: 24px;
+    z-index: 2;
+    width: 38px;
+    height: 15px;
+    border: 1px solid rgba(var(--accent-rgb), .22);
+    border-radius: 4px 4px 12px 12px;
+    background: rgba(var(--accent-rgb), .045);
+  }
+
+  .pet-bowl::before {
+    content: "";
+    position: absolute;
+    left: 6px;
+    right: 6px;
+    top: 2px;
+    height: 4px;
+    border-radius: 50%;
+    background: rgba(244,201,122,.26);
+  }
+
+  .pet-toy {
+    position: absolute;
+    right: 26px;
+    bottom: 27px;
+    z-index: 2;
+    width: 18px;
+    height: 18px;
+    border: 1px solid rgba(140,124,255,.28);
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.13), rgba(140,124,255,.055));
+  }
+
+  .pet-bed {
+    position: absolute;
+    right: 13px;
+    bottom: 19px;
+    z-index: 1;
+    width: 57px;
+    height: 23px;
+    border: 1px solid rgba(var(--accent-rgb), .12);
+    border-radius: 50%;
+    background: rgba(var(--accent-rgb), .025);
+  }
+
+
+  .pet-egg {
+    position: absolute;
+    z-index: 4;
+    left: 50%;
+    bottom: 20px;
+    width: 88px;
+    height: 106px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--accent);
+    cursor: pointer;
+    transform: translateX(-50%);
+    filter: drop-shadow(0 10px 15px rgba(0,0,0,.28)) drop-shadow(0 0 12px rgba(var(--accent-rgb), .08));
+  }
+
+  .pet-egg svg {
+    width: 100%;
+    height: 100%;
+    animation: petEggIdle 3.4s ease-in-out infinite;
+  }
+
+  @keyframes petEggIdle {
+    0%, 100% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-2px) rotate(1deg); }
+  }
+
+  .pet-home:not(.egg-stage) .pet-egg {
+    display: none;
+  }
+
+  .pet-home.egg-stage .pet-character,
+  .pet-home.egg-stage .pet-bowl,
+  .pet-home.egg-stage .pet-toy,
+  .pet-home.egg-stage .pet-bed,
+  .pet-home.egg-stage .pet-stats,
+  .pet-home.egg-stage .pet-profile {
+    display: none;
+  }
+
+  .pet-home:not(.egg-stage) .pet-incubation {
+    display: none;
+  }
+
+  .pet-incubation {
+    display: grid;
+    gap: 7px;
+    padding: 3px 13px 12px;
+  }
+
+  .pet-incubation-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    color: var(--muted);
+    font: 9px/1.2 var(--mono);
+    letter-spacing: .10em;
+  }
+
+  .pet-incubation-line strong {
+    color: var(--accent);
+    font-size: 13px;
+  }
+
+  .pet-profile {
+    display: grid;
+    gap: 5px;
+    margin: 0 clamp(24px, 6vw, 96px) 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(var(--accent-rgb), .10);
+    border-radius: 8px;
+    background: rgba(var(--accent-rgb), .025);
+  }
+
+  .pet-profile > div {
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    gap: 8px;
+    align-items: baseline;
+  }
+
+  .pet-profile span {
+    color: var(--muted);
+    font: 10px/1.3 var(--mono);
+    letter-spacing: .10em;
+  }
+
+  .pet-profile strong {
+    min-width: 0;
+    color: #d8e7f2;
+    font: 12px/1.4 var(--mono);
+    font-weight: 600;
+    letter-spacing: .035em;
+    overflow-wrap: anywhere;
+  }
+
+  .pet-character,
+  .pet-egg {
+    color: var(--pet-color, var(--accent));
+  }
+
+  .pet-stat-fill {
+    background: linear-gradient(90deg, var(--pet-color, var(--accent)), var(--accent-2));
+  }
+
+  .pet-character.species-mossling .pet-tail {
+    opacity: .18;
+  }
+
+  .pet-character.species-moonbun .pet-ear {
+    transform: scaleY(1.25);
+    transform-box: fill-box;
+    transform-origin: bottom center;
+  }
+
+  .pet-character.species-sparkbot .pet-ear {
+    opacity: .35;
+  }
+
+  .pet-character.species-bytecat .pet-body-shape {
+    stroke-width: 3;
+  }
+
+  .pet-character.species-lumafox .pet-tail {
+    stroke-width: 4;
+  }
+
+  .pet-home.egg-stage .pet-action-btn {
+    opacity: .42;
+    cursor: not-allowed;
+  }
+
+  .pet-stats {
+    display: grid;
+    gap: 8px;
+    padding: 14px clamp(24px, 6vw, 96px) 14px;
+  }
+
+  .pet-stat {
+    display: grid;
+    gap: 5px;
+  }
+
+  .pet-stat-line {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    color: var(--muted);
+    font: 11px/1.2 var(--mono);
+    letter-spacing: .09em;
+  }
+
+  .pet-stat-line strong {
+    color: #d8e7f2;
+    font-weight: 600;
+  }
+
+  .pet-stat-track {
+    height: 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgba(255,255,255,.035);
+  }
+
+  .pet-stat-fill {
+    height: 100%;
+    width: 0;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition: width .3s ease;
+  }
+
+  .pet-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    padding: 0 clamp(24px, 6vw, 96px) 24px;
+  }
+
+  .pet-action-btn {
+    min-width: 0;
+    min-height: 36px;
+    padding: 9px 7px;
+    font-size: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+  }
+
+  .pet-mini-btn {
+    display: none;
+    width: 64px;
+    height: 64px;
+    padding: 0;
+    place-items: center;
+    position: relative;
+    border: 1px solid rgba(var(--accent-rgb), .28);
+    border-radius: 18px 5px 18px 5px;
+    background:
+      linear-gradient(145deg, rgba(255,255,255,.045), transparent 44%),
+      rgba(var(--primary-rgb), .94);
+    color: var(--accent);
+    box-shadow: 0 14px 38px rgba(0,0,0,.32), inset 0 1px 0 rgba(255,255,255,.06);
+    cursor: pointer;
+  }
+
+  .pet-mini-status {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 10px currentColor;
+  }
+
+
+
+
+  .pet-home.pet-pulse .pet-character svg {
+    animation: petReact .34s ease both;
+  }
+
+  @keyframes petReact {
+    0% { transform: translateY(0) scale(1); }
+    45% { transform: translateY(-7px) scale(1.055); }
+    100% { transform: translateY(0) scale(1); }
+  }
+
+  @media (max-width: 760px) {
+    .pet-home {
+      right: 10px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      width: min(310px, calc(100vw - 20px));
+    }
+
+
+    .pet-mini-btn {
+      width: 58px;
+      height: 58px;
+      border-radius: 16px 5px 16px 5px;
+    }
+
+    .pet-room {
+      height: 160px;
+    }
+
+    .pet-character {
+      width: 90px;
+      height: 90px;
+    }
+  }
+
+  @media (max-height: 640px) {
+    .pet-room {
+      height: 142px;
+    }
+
+    .pet-character {
+      width: 80px;
+      height: 80px;
+      bottom: 18px;
+    }
+
+    .pet-stats {
+      padding-block: 8px;
+      gap: 6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pet-character svg,
+    .pet-egg svg {
+      animation: none !important;
+    }
+  }
+
+
+.pet-head-actions{display:inline-flex;gap:5px}
+.pet-head-btn svg{pointer-events:none}
+.pet-install-btn{position:relative}
+.pet-install-btn.install-ready::after{content:"";position:absolute;right:4px;top:4px;width:5px;height:5px;border-radius:50%;background:var(--success);box-shadow:0 0 8px var(--success)}
+.pet-modal-backdrop{position:fixed;inset:0;z-index:120;display:none;place-items:center;padding:18px;background:rgba(0,2,6,.68);backdrop-filter:blur(10px)}
+.pet-modal-backdrop.open{display:grid}
+.pet-modal{width:min(420px,100%);padding:20px;background:rgba(8,13,22,.97);border:1px solid var(--border-strong);border-radius:14px;box-shadow:0 30px 100px rgba(0,0,0,.58),0 0 50px rgba(var(--accent-rgb),.05)}
+.pet-modal-head{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid var(--border)}
+.pet-modal-title{margin:0;font:600 12px/1 var(--mono);letter-spacing:.11em;text-transform:uppercase}
+.pet-modal-label{display:grid;gap:7px;margin-top:18px;color:var(--muted);font:9px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase}
+.pet-modal-input{width:100%;margin-top:8px;padding:10px 12px;color:var(--text);background:rgba(0,0,0,.18);border:1px solid var(--border);border-radius:9px;outline:none}
+.pet-modal-input:focus{border-color:var(--border-strong);box-shadow:0 0 0 3px rgba(var(--accent-rgb),.07)}
+.pet-modal-note{margin-top:10px;color:var(--muted-2);font:9px/1.5 var(--mono)}
+.pet-modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.toast-stack{position:fixed;right:18px;bottom:18px;z-index:200;display:grid;gap:8px;width:min(360px,calc(100vw - 36px))}
+.toast{background:rgba(8,14,22,.96);border:1px solid var(--border-strong);border-left:3px solid var(--accent);border-radius:9px;padding:12px 14px;box-shadow:0 14px 40px rgba(0,0,0,.35);font:11px/1.45 var(--mono);animation:toastIn .22s ease both}
+@keyframes toastIn{from{opacity:0;transform:translateY(7px)}to{opacity:1;transform:translateY(0)}}
+@media (max-width:760px){.pet-home-head,.pet-room,.pet-speech,.pet-profile{margin-inline:16px}.pet-stats{padding-inline:16px}.pet-controls{padding-inline:16px;padding-bottom:16px}.pet-home-head{padding-top:18px}.pet-home-kicker{font-size:11px}.pet-home-title{font-size:15px}.pet-room{min-height:0}.pet-character{width:88px;height:88px}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.pet-character svg,.pet-egg svg{animation:none!important}}
+
+</style>
+</head>
+<body>
+<div class="app-stage">
+  <div class="app-brand">GLANCE // EXTRACTED MODULE<strong>COMPANION // HABITAT</strong></div>
+  <aside id="petHome" class="pet-home" aria-label="Companion habitat">
+<div class="pet-home-frame">
+    <div class="pet-home-head">
+      <div>
+        <div class="pet-home-kicker">COMPANION // HABITAT</div>
+        <div class="pet-home-title">
+          <span id="petName">NOVA</span>
+          <span id="petMoodBadge" class="pet-mood-badge">CONTENT</span>
+        </div>
+      </div>
+      <div class="pet-head-actions">
+        <button id="petRenameBtn" class="icon-btn pet-head-btn" type="button" title="Rename companion" aria-label="Rename companion">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 20l4.2-1 10.4-10.4a2 2 0 00-2.8-2.8L5.4 16.2 4 20zM14.8 6.8l2.8 2.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <button id="petInstallBtn" class="icon-btn pet-head-btn pet-install-btn" type="button" title="Install Companion" aria-label="Install Companion"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 4v10m0 0l-4-4m4 4l4-4M5 19h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+</div>
+    </div>
+
+    <div class="pet-room">
+      <div class="pet-window" aria-hidden="true">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="pet-room-label" aria-hidden="true">HOME NODE // 01</div>
+      <div class="pet-bowl" aria-hidden="true"><span></span></div>
+      <div class="pet-toy" aria-hidden="true"></div>
+      <div class="pet-bed" aria-hidden="true"></div>
+
+      <button id="petEggBtn" class="pet-egg" type="button" title="Inspect egg" aria-label="Inspect companion egg">
+        <svg viewBox="0 0 92 108" fill="none" aria-hidden="true">
+          <path d="M46 8C27 8 13 34 13 63c0 24 13 37 33 37s33-13 33-37C79 34 65 8 46 8z"
+            fill="rgba(89,217,255,.07)" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M26 56l10-7 9 8 10-12 12 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity=".55"/>
+          <circle cx="34" cy="34" r="3" fill="currentColor" opacity=".18"/>
+          <circle cx="57" cy="27" r="2" fill="currentColor" opacity=".3"/>
+        </svg>
+      </button>
+
+      <button id="petCharacter" class="pet-character happy" type="button" title="Pet companion" aria-label="Pet companion">
+        <svg viewBox="0 0 96 96" fill="none" aria-hidden="true">
+          <path class="pet-ear" d="M28 29L19 12l20 10M68 29l9-17-20 10" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
+          <path class="pet-tail" d="M72 68c15 0 16-14 8-17-5-2-8 2-6 6" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <rect class="pet-body-shape" x="20" y="22" width="56" height="58" rx="25" fill="rgba(89,217,255,.08)" stroke="currentColor" stroke-width="2.5"/>
+          <path d="M31 30c8-5 26-5 34 0" stroke="rgba(255,255,255,.16)" stroke-width="2" stroke-linecap="round"/>
+          <ellipse class="pet-eye pet-eye-left" cx="38" cy="47" rx="3.4" ry="4.2" fill="currentColor"/>
+          <ellipse class="pet-eye pet-eye-right" cx="58" cy="47" rx="3.4" ry="4.2" fill="currentColor"/>
+          <circle cx="31" cy="56" r="3.2" fill="rgba(255,126,150,.22)"/>
+          <circle cx="65" cy="56" r="3.2" fill="rgba(255,126,150,.22)"/>
+          <path id="petMouth" d="M39 59q9 8 18 0" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+          <path class="pet-chest" d="M39 70h18" stroke="rgba(255,255,255,.12)" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="petSpeech" class="pet-speech" aria-live="polite">Incubation systems online.</div>
+
+    <div id="petProfile" class="pet-profile" aria-label="Companion profile">
+      <div><span>TYPE</span><strong id="petSpeciesLabel">UNIDENTIFIED</strong></div>
+      <div><span>LIKES</span><strong id="petLikesLabel">INCUBATING</strong></div>
+      <div><span>TRAIT</span><strong id="petTraitLabel">UNKNOWN</strong></div>
+    </div>
+
+    <div id="petIncubation" class="pet-incubation" aria-label="Egg incubation progress">
+      <div class="pet-incubation-line">
+        <span>INCUBATION</span>
+        <strong id="petHatchCountdown">10:00</strong>
+      </div>
+      <div class="pet-stat-track"><div id="petIncubationFill" class="pet-stat-fill"></div></div>
+    </div>
+
+    <div class="pet-stats" aria-label="Companion status">
+      <div class="pet-stat">
+        <div class="pet-stat-line"><span>FULLNESS</span><strong id="petFullnessValue">78%</strong></div>
+        <div class="pet-stat-track"><div id="petFullnessFill" class="pet-stat-fill"></div></div>
+      </div>
+      <div class="pet-stat">
+        <div class="pet-stat-line"><span>HAPPINESS</span><strong id="petHappinessValue">82%</strong></div>
+        <div class="pet-stat-track"><div id="petHappinessFill" class="pet-stat-fill"></div></div>
+      </div>
+      <div class="pet-stat">
+        <div class="pet-stat-line"><span>ENERGY</span><strong id="petEnergyValue">86%</strong></div>
+        <div class="pet-stat-track"><div id="petEnergyFill" class="pet-stat-fill"></div></div>
+      </div>
+    </div>
+
+    <div class="pet-controls">
+      <button id="petFeedBtn" class="tiny-btn pet-action-btn" type="button">
+        <span aria-hidden="true">◇</span> Feed
+      </button>
+      <button id="petPlayBtn" class="tiny-btn pet-action-btn" type="button">
+        <span aria-hidden="true">△</span> Play
+      </button>
+      <button id="petPetBtn" class="tiny-btn pet-action-btn" type="button">
+        <span aria-hidden="true">♡</span> Pet
+      </button>
+    </div>
+  </div>
+</div>
+
+<div id="petModalBackdrop" class="pet-modal-backdrop" aria-hidden="true">
+  <section class="pet-modal" role="dialog" aria-modal="true" aria-labelledby="petModalTitle">
+    <div class="pet-modal-head">
+      <h2 id="petModalTitle" class="pet-modal-title">Companion Identity</h2>
+      <button id="petModalCancelTop" class="icon-btn pet-head-btn" type="button" aria-label="Close dialog">×</button>
+    </div>
+    <label class="pet-modal-label" for="petModalName">Companion name
+      <input id="petModalName" class="pet-modal-input" maxlength="18" autocomplete="off" value="NOVA" placeholder="NOVA" />
+    </label>
+    <div class="pet-modal-note">Your companion and its status are stored only in this browser using localStorage.</div>
+    <div class="pet-modal-actions">
+      <button id="petModalCancel" class="text-btn" type="button">Cancel</button>
+      <button id="petModalSave" class="primary-btn" type="button">Save name</button>
+    </div>
+  </section>
+</div>
+
+<div id="toastStack" class="toast-stack" aria-live="polite" aria-atomic="false"></div>
+<script>
+
+(() => {
+  "use strict";
+
+  const APP_KEY = "glanceCompanion.v1";
+  const PET_HATCH_MS = 10 * 60 * 1000;
+  const defaults = {
+    pet: {
+      name: "NOVA",
+      stage: "egg",
+      species: null,
+      createdAt: Date.now(),
+      hatchAt: Date.now() + PET_HATCH_MS,
+      fullness: 100,
+      happiness: 100,
+      energy: 100,
+      lastUpdated: Date.now(),
+      interactions: 0,
+    },
+    prefs: { accent: "#59d9ff", primary: "#0c121c" }
+  };
+
+  const PET_SPECIES = {
+    lumafox: { label:"LUMA FOX", likes:"CHASE GAMES + NIGHT LIGHTS", trait:"PLAY +25% // SLOWER LONELINESS", color:"#73e6ff", feedAffinity:.95, playAffinity:1.25, petAffinity:.95, hungerRate:1.0, socialRate:.82, recoveryRate:1.05, playEnergyCost:.9, feedMessage:"Snack secured. Now chase something?", playMessage:"Fast paws online. Excellent game.", petMessage:"Acceptable head pats. Continue." },
+    mossling: { label:"MOSSLING", likes:"SNACKS + QUIET CORNERS", trait:"FOOD +35% // SLOWER HUNGER", color:"#83e6ae", feedAffinity:1.35, playAffinity:.78, petAffinity:1.12, hungerRate:.76, socialRate:.95, recoveryRate:1.1, playEnergyCost:1.05, feedMessage:"Perfect snack. Moss levels restored.", playMessage:"A gentle game. That was enough excitement.", petMessage:"Tiny leaves rustle happily." },
+    bytecat: { label:"BYTE CAT", likes:"HEAD PATS + PUZZLES", trait:"PET +40% // PLAY +10%", color:"#a9a0ff", feedAffinity:.9, playAffinity:1.1, petAffinity:1.4, hungerRate:1.08, socialRate:.9, recoveryRate:1.0, playEnergyCost:1.0, feedMessage:"Nutrient packet accepted.", playMessage:"Puzzle solved. Obviously.", petMessage:"Purr process running at full capacity." },
+    sparkbot: { label:"SPARK BOT", likes:"GAMES + RECHARGING", trait:"PLAY +35% // ENERGY RECOVERY +30%", color:"#ffd276", feedAffinity:.85, playAffinity:1.35, petAffinity:.82, hungerRate:.9, socialRate:1.02, recoveryRate:1.3, playEnergyCost:.82, feedMessage:"Fuel pellet converted to usable charge.", playMessage:"Game loop optimal. Run it again.", petMessage:"Chassis polish acknowledged." },
+    moonbun: { label:"MOON BUN", likes:"AFFECTION + NAPS", trait:"PET +45% // ENERGY RECOVERY +35%", color:"#f4a7df", feedAffinity:1.02, playAffinity:.86, petAffinity:1.45, hungerRate:.95, socialRate:.74, recoveryRate:1.35, playEnergyCost:1.12, feedMessage:"Snack received. Nap probability increasing.", playMessage:"Hop sequence complete. Cozy now?", petMessage:"Ears relaxed. This is ideal." }
+  };
+
+  const $ = (selector, root=document) => root.querySelector(selector);
+  let state = loadState();
+  let petMessageUntil = 0;
+  let deferredInstallPrompt = null;
+  let walkTimer = null;
+  let walkTimeout = null;
+  let walkX = 50;
+  let walkBottom = 28;
+
+  function cryptoId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "id-" + Date.now().toString(36) + "-" + Math.random().toString(36).slice(2, 9);
+  }
+
+  function clamp(n, min, max) { return Math.min(max, Math.max(min, n)); }
+  function cloneDefaults() { return JSON.parse(JSON.stringify(defaults)); }
+  function safeParse(value, fallback) { try { return JSON.parse(value) ?? fallback; } catch { return fallback; } }
+
+  function loadState() {
+    let raw = null;
+    try { raw = localStorage.getItem(APP_KEY); } catch {}
+    const stored = safeParse(raw, null);
+    const merged = stored && typeof stored === "object"
+      ? { ...cloneDefaults(), ...stored, pet: { ...defaults.pet, ...(stored.pet || {}) }, prefs: { ...defaults.prefs, ...(stored.prefs || {}) } }
+      : cloneDefaults();
+    if (!merged.pet?.stage) {
+      merged.pet = { ...defaults.pet, createdAt: Date.now(), hatchAt: Date.now() + PET_HATCH_MS, lastUpdated: Date.now() };
+    }
+    return merged;
+  }
+
+  function saveState() {
+    try { localStorage.setItem(APP_KEY, JSON.stringify(state)); } catch {}
+  }
+
+  function applyPrefs() {
+    const primary = /^#[0-9a-f]{6}$/i.test(state.prefs.primary) ? state.prefs.primary : defaults.prefs.primary;
+    const accent = /^#[0-9a-f]{6}$/i.test(state.prefs.accent) ? state.prefs.accent : defaults.prefs.accent;
+    const hexToRgb = hex => {
+      const n = parseInt(hex.slice(1), 16);
+      return { r:(n>>16)&255, g:(n>>8)&255, b:n&255 };
+    };
+    const p = hexToRgb(primary), a = hexToRgb(accent);
+    document.documentElement.style.setProperty("--primary", primary);
+    document.documentElement.style.setProperty("--primary-rgb", `${p.r}, ${p.g}, ${p.b}`);
+    document.documentElement.style.setProperty("--accent", accent);
+    document.documentElement.style.setProperty("--accent-rgb", `${a.r}, ${a.g}, ${a.b}`);
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.content = primary;
+  }
+
+  function getPetSpeciesProfile() { return PET_SPECIES[state.pet?.species] || PET_SPECIES.lumafox; }
+
+  function maybeHatchPet(now=Date.now()) {
+    if (state.pet.stage !== "egg") return false;
+    const hatchAt = Number(state.pet.hatchAt) || (now + PET_HATCH_MS);
+    state.pet.hatchAt = hatchAt;
+    if (now >= hatchAt) return hatchPet(now);
+    return false;
+  }
+
+  function hatchPet(now=Date.now()) {
+    if (state.pet.stage !== "egg") return false;
+    const keys = Object.keys(PET_SPECIES);
+    const species = keys[Math.floor(Math.random() * keys.length)];
+    state.pet.stage = "hatched";
+    state.pet.species = species;
+    state.pet.fullness = 88;
+    state.pet.happiness = 92;
+    state.pet.energy = 90;
+    state.pet.lastUpdated = now;
+    state.pet.interactions = 0;
+    saveState();
+    const profile = PET_SPECIES[species];
+    petSpeak(`Shell opened. ${profile.label} detected!`, 6000);
+    petReact();
+    showToast(`${profile.label} HATCHED`);
+    renderPet();
+    return true;
+  }
+
+  function formatPetHatchTime(ms) {
+    const total = Math.max(0, Math.ceil(ms / 1000));
+    return `${String(Math.floor(total/60)).padStart(2,"0")}:${String(total%60).padStart(2,"0")}`;
+  }
+
+  function inspectPetEgg() {
+    if (state.pet.stage !== "egg") return;
+    const remaining = Math.max(0, Number(state.pet.hatchAt) - Date.now());
+    petSpeak(`A faint pulse from inside... hatching in ${formatPetHatchTime(remaining)}.`, 3200);
+    petReact();
+  }
+
+  function clampPetValue(value) { return clamp(Number(value) || 0, 0, 100); }
+
+  function updatePetDecay(now=Date.now()) {
+    if (!state.pet || typeof state.pet !== "object") state.pet = { ...defaults.pet, lastUpdated: now };
+    if (maybeHatchPet(now)) return;
+    if (state.pet.stage === "egg") { state.pet.lastUpdated = now; return; }
+    const profile = getPetSpeciesProfile();
+    const last = Number(state.pet.lastUpdated) || now;
+    const elapsedHours = clamp((now-last)/3600000, 0, 72);
+    if (elapsedHours > 0) {
+      state.pet.fullness = clampPetValue(state.pet.fullness - elapsedHours * 2.8 * profile.hungerRate);
+      state.pet.happiness = clampPetValue(state.pet.happiness - elapsedHours * 1.35 * profile.socialRate);
+      const baseRecovery = state.pet.fullness < 20 ? 1.2 : 3.1;
+      state.pet.energy = clampPetValue(state.pet.energy + elapsedHours * baseRecovery * profile.recoveryRate);
+      state.pet.lastUpdated = now;
+    }
+  }
+
+  function getPetMood() {
+    const fullness=clampPetValue(state.pet.fullness), happiness=clampPetValue(state.pet.happiness), energy=clampPetValue(state.pet.energy);
+    const average=(fullness+happiness+energy)/3;
+    if (energy < 22) return { key:"sleepy", label:"SLEEPY", message:"Low power... cozy mode." };
+    if (fullness < 24) return { key:"hungry", label:"HUNGRY", message:"Food protocol requested." };
+    if (happiness < 28) return { key:"lonely", label:"LONELY", message:"Could use some attention." };
+    if (average >= 88) return { key:"ecstatic", label:"THRIVING", message:"Maximum tiny-creature energy." };
+    if (average >= 68) return { key:"happy", label:"CONTENT", message:"Habitat nominal. Feeling good." };
+    return { key:"okay", label:"OKAY", message:"Doing okay. Check in on me?" };
+  }
+
+  function petMouthPath(moodKey) {
+    if (moodKey === "ecstatic" || moodKey === "happy") return "M39 59q9 8 18 0";
+    if (moodKey === "sleepy") return "M41 61q7 2 14 0";
+    if (moodKey === "hungry" || moodKey === "lonely") return "M40 64q8-7 16 0";
+    return "M40 61q8 3 16 0";
+  }
+
+  function schedulePetWalk(delay = 900) {
+    clearTimeout(walkTimeout);
+    clearInterval(walkTimer);
+    walkTimeout = setTimeout(() => {
+      if (state.pet.stage !== "hatched" || document.hidden) {
+        schedulePetWalk(1600);
+        return;
+      }
+      const previousX = walkX;
+      walkX = 14 + Math.random() * 72;
+      walkBottom = 26 + Math.random() * 62;
+      const character = $("#petCharacter");
+      if (!character) return;
+      character.classList.add("walking");
+      character.style.left = `${walkX}%`;
+      character.style.bottom = `${walkBottom}px`;
+      character.dataset.facing = walkX >= previousX ? "right" : "left";
+      setTimeout(() => character.classList.remove("walking"), 2150);
+      schedulePetWalk(2500 + Math.random() * 3200);
+    }, delay);
+  }
+
+  function stopPetWalk() {
+    clearTimeout(walkTimeout);
+    clearInterval(walkTimer);
+    walkTimeout = null;
+    walkTimer = null;
+  }
+
+  function renderPet() {
+    if(!state.pet)return;
+    maybeHatchPet();
+    const home=$("#petHome"), character=$("#petCharacter"); if(!home||!character)return;
+    const isEgg=state.pet.stage==="egg", name=String(state.pet.name||defaults.pet.name).trim().slice(0,18)||defaults.pet.name;
+    const profile=isEgg?null:getPetSpeciesProfile();
+    home.classList.toggle("egg-stage",isEgg);
+    home.style.setProperty("--pet-color",profile?.color||"var(--accent)");
+    $("#petName").textContent=name.toUpperCase();
+    [$("#petFeedBtn"),$("#petPlayBtn"),$("#petPetBtn")].forEach(btn=>{if(btn)btn.disabled=isEgg;});
+    if(isEgg){
+      stopPetWalk();
+      const hatchAt=Number(state.pet.hatchAt)||(Date.now()+PET_HATCH_MS), createdAt=Number(state.pet.createdAt)||(hatchAt-PET_HATCH_MS), total=Math.max(1,hatchAt-createdAt);
+      const elapsed=clamp(Date.now()-createdAt,0,total), remaining=Math.max(0,hatchAt-Date.now()), progress=clamp(elapsed/total*100,0,100);
+      $("#petMoodBadge").textContent="INCUBATING"; $("#petSpeciesLabel").textContent="UNIDENTIFIED"; $("#petLikesLabel").textContent="UNKNOWN"; $("#petTraitLabel").textContent="HATCH PENDING";
+      $("#petHatchCountdown").textContent=formatPetHatchTime(remaining); $("#petIncubationFill").style.width=`${progress}%`;
+      if(Date.now()>=petMessageUntil&& $("#petSpeech")) $("#petSpeech").textContent=`Egg stable. Hatching in ${formatPetHatchTime(remaining)}.`;
+      return;
+    }
+    state.pet.fullness=clampPetValue(state.pet.fullness); state.pet.happiness=clampPetValue(state.pet.happiness); state.pet.energy=clampPetValue(state.pet.energy);
+    const mood=getPetMood();
+    const wasWalking = character.classList.contains("walking");
+    character.className=`pet-character ${mood.key} species-${state.pet.species||"lumafox"}`;
+    if (wasWalking) character.classList.add("walking");
+    $("#petMoodBadge").textContent=mood.label; $("#petSpeciesLabel").textContent=profile.label; $("#petLikesLabel").textContent=profile.likes; $("#petTraitLabel").textContent=profile.trait;
+    const score=(state.pet.fullness+state.pet.happiness+state.pet.energy)/3;
+    [["petFullness",state.pet.fullness],["petHappiness",state.pet.happiness],["petEnergy",state.pet.energy]].forEach(([prefix,value])=>{
+      const rounded=Math.round(value), valueEl=$(`#${prefix}Value`), fillEl=$(`#${prefix}Fill`); if(valueEl)valueEl.textContent=`${rounded}%`; if(fillEl)fillEl.style.width=`${value}%`;
+    });
+    const mouth=$("#petMouth"); if(mouth)mouth.setAttribute("d",petMouthPath(mood.key));
+    if(Date.now()>=petMessageUntil&&$("#petSpeech"))$("#petSpeech").textContent=mood.message;
+    if (!walkTimeout && !document.hidden) schedulePetWalk(1200 + Math.random()*1600);
+  }
+
+  function petSpeak(message,duration=2800){ const speech=$("#petSpeech"); if(speech)speech.textContent=message; petMessageUntil=Date.now()+duration; }
+  function petReact(){ const home=$("#petHome"); if(!home)return; home.classList.remove("pet-pulse"); void home.offsetWidth; home.classList.add("pet-pulse"); setTimeout(()=>home.classList.remove("pet-pulse"),380); }
+  function commitPetInteraction(message){ state.pet.lastUpdated=Date.now(); state.pet.interactions=(Number(state.pet.interactions)||0)+1; saveState(); renderPet(); petSpeak(message); petReact(); }
+
+  function feedPet(){
+    updatePetDecay(); if(state.pet.stage==="egg"){inspectPetEgg();return;}
+    const profile=getPetSpeciesProfile(); if(state.pet.fullness>=96){petSpeak("I'm full! Save that snack for later.");petReact();return;}
+    state.pet.fullness=clampPetValue(state.pet.fullness+24*profile.feedAffinity); state.pet.happiness=clampPetValue(state.pet.happiness+3); commitPetInteraction(profile.feedMessage);
+  }
+  function playWithPet(){
+    updatePetDecay(); if(state.pet.stage==="egg"){inspectPetEgg();return;}
+    const profile=getPetSpeciesProfile(); if(state.pet.energy<14){petSpeak("Too sleepy to play. Tiny recharge needed.");return;}
+    state.pet.happiness=clampPetValue(state.pet.happiness+22*profile.playAffinity); state.pet.energy=clampPetValue(state.pet.energy-13*profile.playEnergyCost); state.pet.fullness=clampPetValue(state.pet.fullness-5); commitPetInteraction(profile.playMessage);
+  }
+  function petCompanion(){
+    updatePetDecay(); if(state.pet.stage==="egg"){inspectPetEgg();return;}
+    const profile=getPetSpeciesProfile(); state.pet.happiness=clampPetValue(state.pet.happiness+12*profile.petAffinity); state.pet.energy=clampPetValue(state.pet.energy+2); commitPetInteraction(profile.petMessage);
+  }
+  function openPetHome(){ if(state.pet.stage==="egg"){const remaining=Math.max(0,Number(state.pet.hatchAt)-Date.now());petSpeak(`Incubation online. Hatching in ${formatPetHatchTime(remaining)}.`);}else petSpeak(`${state.pet.name||defaults.pet.name} online.`); }
+
+  function escapeHtml(v){return String(v??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;", "'":"&#039;"}[ch]));}
+
+  function openRenameModal(){
+    const modal=$("#petModalBackdrop");
+    $("#petModalName").value=state.pet.name||defaults.pet.name;
+    modal.classList.add("open"); modal.setAttribute("aria-hidden","false");
+    setTimeout(()=>$("#petModalName")?.focus(),0);
+  }
+  function closeRenameModal(){ const modal=$("#petModalBackdrop"); modal.classList.remove("open"); modal.setAttribute("aria-hidden","true"); }
+  function saveRename(){
+    const name=$("#petModalName").value.trim().slice(0,18);
+    if(!name){ petSpeak("Companion name required."); return; }
+    state.pet.name=name; saveState(); renderPet(); closeRenameModal(); petSpeak(`Identity updated. I'm ${name}.`); petReact();
+  }
+
+  function showToast(message){
+    const stack=$("#toastStack"); const el=document.createElement("div"); el.className="toast"; el.textContent=message; stack.appendChild(el);
+    setTimeout(()=>{el.style.opacity="0";el.style.transform="translateY(6px)";setTimeout(()=>el.remove(),180);},2200);
+  }
+
+  function createPwaIcon(size){
+    const canvas=document.createElement("canvas"); canvas.width=size; canvas.height=size; const ctx=canvas.getContext("2d");
+    const accent=getComputedStyle(document.documentElement).getPropertyValue("--accent").trim()||"#59d9ff";
+    ctx.fillStyle="#05070b";ctx.fillRect(0,0,size,size);ctx.strokeStyle=accent;ctx.lineWidth=Math.max(4,size*.026);ctx.beginPath();ctx.roundRect(size*.14,size*.14,size*.72,size*.72,size*.13);ctx.stroke();
+    ctx.fillStyle=accent;ctx.font=`700 ${Math.round(size*.29)}px ${getComputedStyle(document.documentElement).getPropertyValue("--mono")}`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("N",size/2,size*.51);return canvas.toDataURL("image/png");
+  }
+
+  function setupPwa(){
+    try{
+      const startUrl=location.href.split("#")[0].split("?")[0], scopeUrl=new URL(".",startUrl).href;
+      const manifest={name:"COMPANION // HABITAT",short_name:"COMPANION",description:"A standalone futuristic Tamagotchi companion habitat.",start_url:startUrl,scope:scopeUrl,display:"standalone",background_color:"#05070b",theme_color:getComputedStyle(document.documentElement).getPropertyValue("--primary").trim()||"#0c121c",orientation:"any",categories:["lifestyle","games"],icons:[{src:createPwaIcon(192),sizes:"192x192",type:"image/png",purpose:"any maskable"},{src:createPwaIcon(512),sizes:"512x512",type:"image/png",purpose:"any maskable"}]};
+      const blob=new Blob([JSON.stringify(manifest)],{type:"application/manifest+json"}); const url=URL.createObjectURL(blob); const link=document.createElement("link");link.rel="manifest";link.href=url;document.head.appendChild(link);
+      const icon=document.createElement("link");icon.rel="apple-touch-icon";icon.href=createPwaIcon(192);document.head.appendChild(icon);
+    }catch(err){console.warn("PWA metadata setup failed:",err)}
+    window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredInstallPrompt=e;$("#petInstallBtn")?.classList.add("install-ready");$("#petInstallBtn")?.setAttribute("title","Install Companion");});
+    window.addEventListener("appinstalled",()=>{deferredInstallPrompt=null;$("#petInstallBtn")?.classList.remove("install-ready");showToast("COMPANION INSTALLED");});
+  }
+  async function promptPwaInstall(){
+    if(window.matchMedia("(display-mode: standalone)").matches||window.navigator.standalone===true){showToast("COMPANION IS ALREADY INSTALLED");return;}
+    if(deferredInstallPrompt){deferredInstallPrompt.prompt();try{await deferredInstallPrompt.userChoice;}catch{}deferredInstallPrompt=null;$("#petInstallBtn")?.classList.remove("install-ready");return;}
+    if(location.protocol==="file:"){showToast("PWA INSTALL REQUIRES HTTPS OR LOCALHOST");return;}
+    showToast(/iphone|ipad|ipod/i.test(navigator.userAgent)?"SAFARI: SHARE → ADD TO HOME SCREEN":"USE YOUR BROWSER MENU → INSTALL APP");
+  }
+
+  function bindEvents(){
+    $("#petFeedBtn").addEventListener("click",feedPet); $("#petPlayBtn").addEventListener("click",playWithPet); $("#petPetBtn").addEventListener("click",petCompanion); $("#petCharacter").addEventListener("click",petCompanion); $("#petEggBtn").addEventListener("click",inspectPetEgg);
+    $("#petRenameBtn").addEventListener("click",openRenameModal); $("#petInstallBtn").addEventListener("click",promptPwaInstall);
+    $("#petModalCancel").addEventListener("click",closeRenameModal); $("#petModalSave").addEventListener("click",saveRename);
+    $("#petModalBackdrop").addEventListener("mousedown",e=>{if(e.target===e.currentTarget)closeRenameModal();});
+    document.addEventListener("keydown",e=>{if(e.key==="Escape")closeRenameModal();});
+    document.addEventListener("visibilitychange",()=>{if(!document.hidden){updatePetDecay();renderPet();saveState();}});
+    window.addEventListener("pagehide",()=>{updatePetDecay();saveState();});
+  }
+
+  function init(){applyPrefs();setupPwa();bindEvents();updatePetDecay();renderPet();schedulePetWalk(1800);setInterval(()=>{maybeHatchPet();renderPet();},1000);setInterval(()=>{updatePetDecay();renderPet();},60000);}
+  init();
+})();
+
+</script>
+</body>
+</html>
